@@ -25,3 +25,56 @@ h2 {
     border-bottom: 1px solid #555;
     padding-bottom: 10px;
 }
+
+/* Dropdown container */
+.navbar {
+    display: flex;
+    background: #111;
+    border-bottom: 1px solid #555;
+}
+
+.navbar > a,
+.dropdown > a {
+    display: block;
+    padding: 15px 20px;
+    color: white;
+    text-decoration: none;
+}
+
+.navbar > a:hover,
+.dropdown > a:hover {
+    background: #333;
+}
+
+.dropdown {
+    position: relative;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+    background: #111;
+    border: 1px solid #555;
+    z-index: 1000;
+}
+
+/* Dropdown links */
+.dropdown-menu a {
+    display: block;
+    padding: 12px 15px;
+    color: white;
+    text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+    background: #333;
+}
+
+/* Show dropdown when hovering */
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
