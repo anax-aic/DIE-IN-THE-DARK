@@ -74,6 +74,10 @@ h2 {
     background: #333;
 }
 
+body {
+    background: red !important;
+}
+
 /* Show dropdown when hovering */
 .dropdown:hover .dropdown-menu {
     display: block;
