@@ -5,33 +5,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My SCP Project</title>
+    <title>DIE IN THE DARK PLAYERGUIDE</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="../images/logo.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-
     <nav class="navbar">
 
-        <a href="index.html">HOME</a>
+        <a href="index.html" class="logo">
 
-        <div class="dropdown">
-            <a href="#">CHARACTERS</a>
+            <span class="logo-image" aria-label="Die in the Dark"></span>
 
-            <div class="dropdown-menu">
-                <a href="sheet-maker.html">Sheet Maker</a>
-                <a href="database.html">Database</a>
+            <div class="logo-text">
+                <span class="logo-name">DIE IN THE DARK</span>
+                <span class="logo-subtitle">A SCP RP</span>
             </div>
-        </div>
 
-        <a href="lore.html">LORE</a>
-        <a href="documents.html">DOCUMENTS</a>
-        <a href="about.html">ABOUT</a>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="database.html">DEEPWELL ARCHIVES</a></li>
+            <li><a href="lore.html">WORLDBUILDING</a></li>
+            <li><a href="documents.html">DOCUMENTS</a></li>
+            <li class="dropdown">
+                <a href="#">TOOLS</a>
+                <div class="dropdown-menu">
+                    <a href="sheet-maker.html">SHEET MAKER</a>
+                </div>
+            </li>
+            <li><a href="about.html">ABOUT</a></li>
+
+        </ul>
 
     </nav>
 
-    <!-- The rest of your website goes here -->
+    <div class="announcement-bar">
 
+        <div class="announcement-label">
+            <span class="announcement-status"></span>
+            <span>ALERT</span>
+        </div>
+
+        <div class="announcement-window">
+            <div class="announcement-track"></div>
+        </div>
+
+        <div class="announcement-id">
+            BROADCAST // 001
+        </div>
+
+    </div>
+
+<main>
+    <p>
+        Placeholder text
+    </p>
+
+
+    <div class="section-divider">
+        <span class="divider-line"></span>
+
+        <span class="divider-logo"></span>
+
+        <span class="divider-line"></span>
+    </div>
+</main>
+<script src="js/home.js"></script>
 </body>
 </html>
