@@ -17,100 +17,213 @@
 const HUMAN_SHEET_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=0&single=true&output=csv";
 
+const ANOMALY_SHEET_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=1214065682&single=true&output=csv";
+
 let characters = [];
 
 async function loadCharacters() {
-    try {
-        const response = await fetch(HUMAN_SHEET_URL);
 
-        if (!response.ok) {
+    try {
+
+        const [humanResponse, anomalyResponse] =
+            await Promise.all([
+                fetch(HUMAN_SHEET_URL),
+                fetch(ANOMALY_SHEET_URL)
+            ]);
+
+        if (!humanResponse.ok) {
             throw new Error(
-                `Google Sheet returned ${response.status}`
+                `HUMAN sheet returned ${humanResponse.status}`
             );
         }
 
-        const csvText = await response.text();
+        if (!anomalyResponse.ok) {
+            throw new Error(
+                `ANOMALY sheet returned ${anomalyResponse.status}`
+            );
+        }
 
-        characters = parseCSV(csvText).map(row => ({
-            id: row.id || "",
-            name: row.name || "",
-            callsign: row.callsign || "",
+        const humanCSV =
+            await humanResponse.text();
 
-            type: "HUMAN",
-            class: row.class || "",
+        const anomalyCSV =
+            await anomalyResponse.text();
 
-            faction: row.faction || "",
-            department: row.department || "",
-            division: row.division || "",
-            rank: row.rank || "",
-            clearance: row.clearance || "",
-            status: row.status || "",
-            location: row.location || "",
 
-            player_id: row.player_id || "",
+        const humanCharacters =
+            parseCSV(humanCSV).map(row => ({
 
-            description: row.description || "",
+                id: row.id || "",
+                name: row.name || "",
+                callsign: row.callsign || "",
+                image: row.image || "",
 
-            dg_hp: row.dg_hp || "",
-            dg_wp: row.dg_wp || "",
-            dg_san: row.dg_san || "",
+                type: "HUMAN",
+                class: row.class || "",
 
-            dg_str: row.dg_str || "",
-            dg_con: row.dg_con || "",
-            dg_dex: row.dg_dex || "",
-            dg_int: row.dg_int || "",
-            dg_pow: row.dg_pow || "",
-            dg_cha: row.dg_cha || "",
+                faction: row.faction || "",
+                department: row.department || "",
+                division: row.division || "",
+                rank: row.rank || "",
+                clearance: row.clearance || "",
+                status: row.status || "",
+                location: row.location || "",
 
-            dg_accounting: row.dg_accounting || "",
-            dg_alertness: row.dg_alertness || "",
-            dg_anthropology: row.dg_anthropology || "",
-            dg_archeology: row.dg_archeology || "",
-            dg_artillery: row.dg_artillery || "",
-            dg_athletics: row.dg_athletics || "",
-            dg_bureaucracy: row.dg_bureaucracy || "",
-            dg_computer_science: row.dg_computer_science || "",
-            dg_criminology: row.dg_criminology || "",
-            dg_demolitions: row.dg_demolitions || "",
-            dg_disguise: row.dg_disguise || "",
-            dg_dodge: row.dg_dodge || "",
-            dg_drive: row.dg_drive || "",
-            dg_firearms: row.dg_firearms || "",
-            dg_first_aid: row.dg_first_aid || "",
-            dg_forensics: row.dg_forensics || "",
-            dg_heavy_machinery: row.dg_heavy_machinery || "",
-            dg_heavy_weapons: row.dg_heavy_weapons || "",
-            dg_history: row.dg_history || "",
-            dg_humint: row.dg_humint || "",
-            dg_law: row.dg_law || "",
-            dg_medicine: row.dg_medicine || "",
-            dg_melee_weapons: row.dg_melee_weapons || "",
-            dg_navigate: row.dg_navigate || "",
-            dg_occult: row.dg_occult || "",
-            dg_persuade: row.dg_persuade || "",
-            dg_pharmacy: row.dg_pharmacy || "",
-            dg_psychotherapy: row.dg_psychotherapy || "",
-            dg_ride: row.dg_ride || "",
-            dg_search: row.dg_search || "",
-            dg_sigint: row.dg_sigint || "",
-            dg_stealth: row.dg_stealth || "",
-            dg_surgery: row.dg_surgery || "",
-            dg_survival: row.dg_survival || "",
-            dg_swim: row.dg_swim || "",
-            dg_unarmed_combat: row.dg_unarmed_combat || "",
-            dg_unnatural: row.dg_unnatural || "",
+                player_id: row.player_id || "",
 
-            dg_art: row.dg_art || "",
-            dg_craft: row.dg_craft || "",
-            dg_foreign_language: row.dg_foreign_language || "",
-            dg_military_science: row.dg_military_science || "",
-            dg_pilot: row.dg_pilot || "",
-            dg_science: row.dg_science || ""
-        }));
+                description: row.description || "",
+
+                dg_hp: row.dg_hp || "",
+                dg_wp: row.dg_wp || "",
+                dg_san: row.dg_san || "",
+
+                dg_str: row.dg_str || "",
+                dg_con: row.dg_con || "",
+                dg_dex: row.dg_dex || "",
+                dg_int: row.dg_int || "",
+                dg_pow: row.dg_pow || "",
+                dg_cha: row.dg_cha || "",
+
+                dg_accounting: row.dg_accounting || "",
+                dg_alertness: row.dg_alertness || "",
+                dg_anthropology: row.dg_anthropology || "",
+                dg_archeology: row.dg_archeology || "",
+                dg_artillery: row.dg_artillery || "",
+                dg_athletics: row.dg_athletics || "",
+                dg_bureaucracy: row.dg_bureaucracy || "",
+                dg_computer_science: row.dg_computer_science || "",
+                dg_criminology: row.dg_criminology || "",
+                dg_demolitions: row.dg_demolitions || "",
+                dg_disguise: row.dg_disguise || "",
+                dg_dodge: row.dg_dodge || "",
+                dg_drive: row.dg_drive || "",
+                dg_firearms: row.dg_firearms || "",
+                dg_first_aid: row.dg_first_aid || "",
+                dg_forensics: row.dg_forensics || "",
+                dg_heavy_machinery: row.dg_heavy_machinery || "",
+                dg_heavy_weapons: row.dg_heavy_weapons || "",
+                dg_history: row.dg_history || "",
+                dg_humint: row.dg_humint || "",
+                dg_law: row.dg_law || "",
+                dg_medicine: row.dg_medicine || "",
+                dg_melee_weapons: row.dg_melee_weapons || "",
+                dg_navigate: row.dg_navigate || "",
+                dg_occult: row.dg_occult || "",
+                dg_persuade: row.dg_persuade || "",
+                dg_pharmacy: row.dg_pharmacy || "",
+                dg_psychotherapy: row.dg_psychotherapy || "",
+                dg_ride: row.dg_ride || "",
+                dg_search: row.dg_search || "",
+                dg_sigint: row.dg_sigint || "",
+                dg_stealth: row.dg_stealth || "",
+                dg_surgery: row.dg_surgery || "",
+                dg_survival: row.dg_survival || "",
+                dg_swim: row.dg_swim || "",
+                dg_unarmed_combat: row.dg_unarmed_combat || "",
+                dg_unnatural: row.dg_unnatural || "",
+
+                dg_art: row.dg_art || "",
+                dg_craft: row.dg_craft || "",
+                dg_foreign_language: row.dg_foreign_language || "",
+                dg_military_science: row.dg_military_science || "",
+                dg_pilot: row.dg_pilot || "",
+                dg_science: row.dg_science || ""
+
+            }));
+
+
+        const anomalyCharacters =
+            parseCSV(anomalyCSV).map(row => ({
+                catalog: row.catalog || "",
+                id: row.id || "",
+                codename: row.codename || "",
+
+                type: "ANOMALY",
+
+                anomalyType: row.type || "",
+                object_class: row.object_class || "",
+                clearance: row.clearance || "",
+                containment: row.containment || "",
+                location: row.location || "",
+                status: row.status || "",
+
+                image: row.image || "",
+                player_id: row.player_id || "",
+                blurb: row.blurb || "",
+                tags: row.tags || "",
+
+
+                dg_hp: row.dg_hp || "",
+                dg_wp: row.dg_wp || "",
+                dg_san: row.dg_san || "",
+                dg_str: row.dg_str || "",
+                dg_con: row.dg_con || "",
+                dg_dex: row.dg_dex || "",
+                dg_int: row.dg_int || "",
+                dg_pow: row.dg_pow || "",
+                dg_cha: row.dg_cha || "",
+
+                dg_accounting: row.dg_accounting || "",
+                dg_alertness: row.dg_alertness || "",
+                dg_anthropology: row.dg_anthropology || "",
+                dg_archeology: row.dg_archeology || "",
+                dg_artillery: row.dg_artillery || "",
+                dg_athletics: row.dg_athletics || "",
+                dg_bureaucracy: row.dg_bureaucracy || "",
+                dg_computer_science: row.dg_computer_science || "",
+                dg_criminology: row.dg_criminology || "",
+                dg_demolitions: row.dg_demolitions || "",
+                dg_disguise: row.dg_disguise || "",
+                dg_dodge: row.dg_dodge || "",
+                dg_drive: row.dg_drive || "",
+                dg_firearms: row.dg_firearms || "",
+                dg_first_aid: row.dg_first_aid || "",
+                dg_forensics: row.dg_forensics || "",
+                dg_heavy_machinery: row.dg_heavy_machinery || "",
+                dg_heavy_weapons: row.dg_heavy_weapons || "",
+                dg_history: row.dg_history || "",
+                dg_humint: row.dg_humint || "",
+                dg_law: row.dg_law || "",
+                dg_medicine: row.dg_medicine || "",
+                dg_melee_weapons: row.dg_melee_weapons || "",
+                dg_navigate: row.dg_navigate || "",
+                dg_occult: row.dg_occult || "",
+                dg_persuade: row.dg_persuade || "",
+                dg_pharmacy: row.dg_pharmacy || "",
+                dg_psychotherapy: row.dg_psychotherapy || "",
+                dg_ride: row.dg_ride || "",
+                dg_search: row.dg_search || "",
+                dg_sigint: row.dg_sigint || "",
+                dg_stealth: row.dg_stealth || "",
+                dg_surgery: row.dg_surgery || "",
+                dg_survival: row.dg_survival || "",
+                dg_swim: row.dg_swim || "",
+                dg_unarmed_combat: row.dg_unarmed_combat || "",
+                dg_unnatural: row.dg_unnatural || "",
+
+                dg_art: row.dg_art || "",
+                dg_craft: row.dg_craft || "",
+                dg_foreign_language: row.dg_foreign_language || "",
+                dg_military_science: row.dg_military_science || "",
+                dg_pilot: row.dg_pilot || "",
+                dg_science: row.dg_science || ""
+            }));
+
+        characters = [
+            ...humanCharacters,
+            ...anomalyCharacters
+        ];
 
     } catch (error) {
-        console.error("Failed to load HUMAN database:", error);
+
+        console.error(
+            "Failed to load database:",
+            error
+        );
+
         characters = [];
+
     }
 }
 
@@ -387,66 +500,81 @@ function updateCounts() {
    FILTER GENERATION
    ========================================================= */
 function renderFilters() {
-    const container = document.getElementById("filter-container");
+
+    const container =
+        document.getElementById("filter-container");
 
     container.innerHTML = "";
 
-    const filterFields = [
-        {
-            key: "faction",
-            label: "FACTION"
-        },
-        {
-            key: "department",
-            label: "DEPARTMENT"
-        },
-        {
-            key: "division",
-            label: "DIVISION"
-        },
-        {
-            key: "rank",
-            label: "RANK"
-        },
-        {
-            key: "clearance",
-            label: "CLEARANCE"
-        },
-        {
-            key: "location",
-            label: "LOCATION"
-        },
-        {
-            key: "status",
-            label: "STATUS"
-        }
-    ];
+    const filterFields =
+        currentType === "HUMAN"
+            ? [
+                { key: "faction", label: "FACTION" },
+                { key: "department", label: "DEPARTMENT" },
+                { key: "division", label: "DIVISION" },
+                { key: "rank", label: "RANK" },
+                { key: "clearance", label: "CLEARANCE" },
+                { key: "location", label: "LOCATION" },
+                { key: "status", label: "STATUS" }
+            ]
+            : [
+                { key: "catalog", label: "CATALOG" },
+                { key: "object_class", label: "OBJECT CLASS" },
+                { key: "clearance", label: "CLEARANCE" },
+                { key: "anomalyType", label: "TYPE" },
+                { key: "location", label: "LOCATION" },
+                { key: "status", label: "STATUS" }
+            ];
+
 
     filterFields.forEach(field => {
+
         const values = [
             ...new Set(
                 characters
-                    .filter(character => character.type === currentType)
-                    .map(character => character[field.key])
-                    .filter(value => value)
+                    .filter(
+                        character =>
+                            character.type === currentType
+                    )
+                    .map(
+                        character =>
+                            character[field.key]
+                    )
+                    .filter(value => value !== null &&
+                                     value !== undefined &&
+                                     String(value).trim() !== "")
             )
         ].sort();
+
 
         if (values.length === 0) {
             return;
         }
 
-        currentFilters[field.key] = currentFilters[field.key] || [];
 
-        const wrapper = document.createElement("div");
-        wrapper.className = "filter-wrapper";
+        currentFilters[field.key] =
+            currentFilters[field.key] || [];
 
-        const selectedCount = currentFilters[field.key].length;
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "filter-wrapper";
+
+
+        const selectedCount =
+            currentFilters[field.key].length;
+
 
         wrapper.innerHTML = `
             <button
                 type="button"
-                class="filter-select ${selectedCount > 0 ? "filtered" : ""}"
+                class="filter-select ${
+                    selectedCount > 0
+                        ? "filtered"
+                        : ""
+                }"
             >
                 <span>
                     ${field.label}
@@ -457,94 +585,185 @@ function renderFilters() {
                     }
                 </span>
 
-                <span class="filter-arrow">⌄</span>
+                <span class="filter-arrow">
+                    ⌄
+                </span>
             </button>
 
             <div class="filter-dropdown">
-                ${values
-                    .map(
-                        value => `
-                            <label class="filter-option">
-                                <input
-                                    type="checkbox"
-                                    value="${escapeHTML(value)}"
-                                    ${
-                                        currentFilters[field.key].includes(value)
-                                            ? "checked"
-                                            : ""
-                                    }
-                                >
 
-                                <span class="filter-checkbox"></span>
+                ${
+                    values
+                        .map(
+                            value => `
+                                <label class="filter-option">
 
-                                <span class="filter-option-text">
-                                    ${escapeHTML(value)}
-                                </span>
-                            </label>
-                        `
-                    )
-                    .join("")}
+                                    <input
+                                        type="checkbox"
+                                        value="${escapeHTML(value)}"
+                                        ${
+                                            currentFilters[field.key]
+                                                .includes(value)
+                                                ? "checked"
+                                                : ""
+                                        }
+                                    >
+
+                                    <span class="filter-checkbox"></span>
+
+                                    <span class="filter-option-text">
+                                        ${escapeHTML(value)}
+                                    </span>
+
+                                </label>
+                            `
+                        )
+                        .join("")
+                }
+
             </div>
         `;
 
-        const select = wrapper.querySelector(".filter-select");
-        const dropdown = wrapper.querySelector(".filter-dropdown");
 
-        select.addEventListener("click", event => {
-            event.stopPropagation();
+        const select =
+            wrapper.querySelector(
+                ".filter-select"
+            );
 
-            document
-                .querySelectorAll(".filter-wrapper.open")
-                .forEach(other => {
-                    if (other !== wrapper) {
-                        other.classList.remove("open");
-                    }
-                });
+        const dropdown =
+            wrapper.querySelector(
+                ".filter-dropdown"
+            );
 
-            wrapper.classList.toggle("open");
-        });
 
-        dropdown.addEventListener("click", event => {
-            event.stopPropagation();
-        });
+        select.addEventListener(
+            "click",
+            event => {
 
-        wrapper.querySelectorAll('input[type="checkbox"]').forEach(input => {
-            input.addEventListener("change", () => {
-                currentFilters[field.key] = [
-                    ...wrapper.querySelectorAll(
-                        'input[type="checkbox"]:checked'
+                event.stopPropagation();
+
+                document
+                    .querySelectorAll(
+                        ".filter-wrapper.open"
                     )
-                ].map(checkbox => checkbox.value);
+                    .forEach(other => {
 
-                const count = currentFilters[field.key].length;
+                        if (other !== wrapper) {
+                            other.classList.remove(
+                                "open"
+                            );
+                        }
 
-                select.classList.toggle("filtered", count > 0);
+                    });
 
-                select.querySelector("span").textContent =
-                    `${field.label}${count > 0 ? ` (${count})` : ""}`;
+                wrapper.classList.toggle(
+                    "open"
+                );
 
-                currentPage = 1;
-                renderCharacters();
+            }
+        );
+
+
+        dropdown.addEventListener(
+            "click",
+            event => {
+                event.stopPropagation();
+            }
+        );
+
+
+        wrapper
+            .querySelectorAll(
+                'input[type="checkbox"]'
+            )
+            .forEach(input => {
+
+                input.addEventListener(
+                    "change",
+                    () => {
+
+                        currentFilters[field.key] = [
+                            ...wrapper.querySelectorAll(
+                                'input[type="checkbox"]:checked'
+                            )
+                        ].map(
+                            checkbox =>
+                                checkbox.value
+                        );
+
+
+                        const count =
+                            currentFilters[
+                                field.key
+                            ].length;
+
+
+                        select.classList.toggle(
+                            "filtered",
+                            count > 0
+                        );
+
+
+                        select
+                            .querySelector("span")
+                            .textContent =
+                                `${field.label}${
+                                    count > 0
+                                        ? ` (${count})`
+                                        : ""
+                                }`;
+
+
+                        currentPage = 1;
+
+                        renderCharacters();
+
+                    }
+                );
+
             });
-        });
 
-        container.appendChild(wrapper);
+
+        container.appendChild(
+            wrapper
+        );
+
     });
 
-    const resetButton = document.createElement("button");
-    resetButton.type = "button";
-    resetButton.className = "filter-reset";
-    resetButton.textContent = "RESET";
 
-    resetButton.addEventListener("click", () => {
-        currentFilters = {};
-        currentPage = 1;
+    const resetButton =
+        document.createElement("button");
 
-        renderFilters();
-        renderCharacters();
-    });
+    resetButton.type =
+        "button";
 
-    container.appendChild(resetButton);
+    resetButton.className =
+        "filter-reset";
+
+    resetButton.textContent =
+        "RESET";
+
+
+    resetButton.addEventListener(
+        "click",
+        () => {
+
+            currentFilters = {};
+
+            currentPage = 1;
+
+            renderFilters();
+
+            renderCharacters();
+
+        }
+    );
+
+
+    container.appendChild(
+        resetButton
+    );
+
 }
 
 function updateFilterButton(button, label, selectedValues) {
@@ -609,11 +828,21 @@ function getFilteredCharacters() {
 
                 character.id,
                 character.name,
+                character.callsign,
                 character.faction,
                 character.department,
-                character.position,
+                character.division,
+                character.rank,
                 character.status,
-                character.location
+                character.location,
+                character.player_id,
+                character.catalog,
+                character.codename,
+                character.anomalyType,
+                character.object_class,
+                character.clearance,
+                character.tags,
+                character.containment
 
             ]
                 .filter(Boolean)
@@ -658,6 +887,41 @@ function getFilteredCharacters() {
    RENDER CHARACTERS
    ========================================================= */
 
+function renderTableHeader() {
+    const header = document.getElementById("table-header");
+
+    if (currentType === "HUMAN") {
+        header.className = "table-header human-layout";
+
+        header.innerHTML = `
+            <div class="table-cell id-cell">#</div>
+            <div class="table-cell name-cell">NAME</div>
+            <div class="table-cell faction-cell">FACTION</div>
+            <div class="table-cell department-cell">DEPARTMENT</div>
+            <div class="table-cell division-cell">DIVISION</div>
+            <div class="table-cell rank-cell">RANK</div>
+            <div class="table-cell clearance-cell">CLEARANCE</div>
+            <div class="table-cell location-cell">LOCATION</div>
+        `;
+
+        return;
+    }
+
+    header.className = "table-header anomaly-layout";
+
+    header.innerHTML = `
+        <div class="table-cell catalog-cell">CATALOG</div>
+        <div class="table-cell id-cell">ID</div>
+        <div class="table-cell codename-cell">CODENAME</div>
+        <div class="table-cell object-class-cell">OBJECT CLASS</div>
+        <div class="table-cell clearance-cell">CLEARANCE</div>
+        <div class="table-cell type-cell">TYPE</div>
+        <div class="table-cell containment-cell">CONTAINMENT</div>
+        <div class="table-cell location-cell">LOCATION</div>
+    `;
+}
+
+
 function createDetailsField(label, value) {
     if (
         value === null ||
@@ -681,6 +945,8 @@ function createDetailsField(label, value) {
 }
 
 function renderCharacters() {
+
+    renderTableHeader();
 
     const filteredCharacters =
         getFilteredCharacters();
@@ -1001,60 +1267,116 @@ function createCharacterRecord(character) {
     record.className = "character-record";
 
     const row = document.createElement("div");
-    row.className = "character-row";
 
-    if (
-        character.status === "DECEASED" ||
-        character.status === "INACTIVE"
-    ) {
-        row.classList.add("is-muted");
+    if (currentType === "HUMAN") {
+
+        row.className = "character-row human-layout";
+
+        if (
+            character.status === "DECEASED" ||
+            character.status === "INACTIVE"
+        ) {
+            row.classList.add("is-muted");
+        }
+
+        row.innerHTML = `
+            <div class="table-cell character-id">
+                ${escapeHTML(String(character.id).replace(/^POI-/i, ""))}
+            </div>
+
+            <div class="table-cell character-name">
+                <span class="name-primary">
+                    ${escapeHTML(character.name)}
+                </span>
+
+                ${
+                    character.callsign
+                        ? `
+                            <span class="name-callsign">
+                                ${escapeHTML(character.callsign)}
+                            </span>
+                        `
+                        : ""
+                }
+            </div>
+
+            <div class="table-cell character-faction">
+                ${escapeHTML(character.faction)}
+            </div>
+
+            <div class="table-cell character-department">
+                ${escapeHTML(character.department)}
+            </div>
+
+            <div class="table-cell character-division">
+                ${escapeHTML(character.division)}
+            </div>
+
+            <div class="table-cell character-rank">
+                ${escapeHTML(character.rank)}
+            </div>
+
+            <div class="table-cell character-clearance">
+                ${escapeHTML(character.clearance)}
+            </div>
+
+            <div class="table-cell character-location">
+                ${escapeHTML(character.location)}
+            </div>
+        `;
+
+    } else {
+
+        row.className = "character-row anomaly-layout";
+
+        if (
+            character.status === "DECEASED" ||
+            character.status === "INACTIVE"
+        ) {
+            row.classList.add("is-muted");
+        }
+
+        const containment = getContainmentPercent(
+            character.containment
+        );
+
+        row.innerHTML = `
+            <div class="table-cell anomaly-catalog">
+                ${escapeHTML(character.catalog)}
+            </div>
+
+            <div class="table-cell anomaly-id">
+                ${escapeHTML(character.id)}
+            </div>
+
+            <div class="table-cell anomaly-codename">
+                ${escapeHTML(character.codename)}
+            </div>
+
+            <div class="table-cell anomaly-object-class">
+                ${escapeHTML(character.object_class)}
+            </div>
+
+            <div class="table-cell anomaly-clearance">
+                ${escapeHTML(character.clearance)}
+            </div>
+
+            <div class="table-cell anomaly-type">
+                ${escapeHTML(character.anomalyType)}
+            </div>
+
+            <div
+                class="table-cell anomaly-containment"
+                style="color: ${getContainmentColor(containment)}"
+            >
+                ${containment}%
+            </div>
+
+            <div class="table-cell anomaly-location">
+                ${escapeHTML(character.location)}
+            </div>
+        `;
     }
-
-    row.innerHTML = `
-        <div class="table-cell character-id">
-            ${escapeHTML(String(character.id).replace(/^POI-/i, ""))}
-        </div>
-
-        <div class="table-cell character-name">
-            <span class="name-primary">
-                ${escapeHTML(character.name)}
-            </span>
-
-            ${
-                character.callsign
-                    ? `
-                        <span class="name-callsign">
-                            ${escapeHTML(character.callsign)}
-                        </span>
-                    `
-                    : ""
-            }
-        </div>
-
-        <div class="table-cell character-faction">
-            ${escapeHTML(character.faction)}
-        </div>
-
-        <div class="table-cell character-department">
-            ${escapeHTML(character.department)}
-        </div>
-
-        <div class="table-cell character-division">
-            ${escapeHTML(character.division)}
-        </div>
-
-        <div class="table-cell character-rank">
-            ${escapeHTML(character.rank)}
-        </div>
-
-        <div class="table-cell character-clearance">
-            ${escapeHTML(character.clearance)}
-        </div>
-
-        <div class="table-cell character-location">
-            ${escapeHTML(character.location)}
-        </div>
-    `;
 
     const details = document.createElement("div");
     details.className = "character-details";
@@ -1063,7 +1385,11 @@ function createCharacterRecord(character) {
         <div class="details-header">
 
             <span class="details-designation">
-                POI-${escapeHTML(String(character.id).replace(/^POI-/i, ""))}
+                ${
+                    currentType === "HUMAN"
+                        ? `POI-${escapeHTML(String(character.id).replace(/^POI-/i, ""))}`
+                        : escapeHTML(getAnomalyDesignation(character))
+                }
             </span>
 
             <span class="details-classification">
@@ -1078,126 +1404,211 @@ function createCharacterRecord(character) {
 
         <div class="details-body">
 
+            <div class="details-main">
 
-            <!-- IDENTITY -->
-            <div class="details-identity">
+                <div class="details-identity">
 
-                <div class="details-name">
-                    ${escapeHTML(character.name)}
+                    <div class="details-name">
+                        ${
+                            currentType === "HUMAN"
+                                ? escapeHTML(character.name)
+                                : escapeHTML(
+                                    character.codename ||
+                                    getAnomalyDesignation(character)
+                                )
+                        }
+                    </div>
+
+                    ${
+                        currentType === "HUMAN" && character.callsign
+                            ? `
+                                <div class="details-callsign">
+                                    ${escapeHTML(character.callsign)}
+                                </div>
+                            `
+                            : ""
+                    }
+
                 </div>
 
                 ${
-                    character.callsign
+                    currentType === "HUMAN"
                         ? `
-                            <div class="details-callsign">
-                                ${escapeHTML(character.callsign)}
+                            <div class="details-meta">
+
+                                ${createDetailsField(
+                                    "DEPARTMENT",
+                                    character.department
+                                )}
+
+                                ${createDetailsField(
+                                    "DIVISION",
+                                    character.division
+                                )}
+
+                                ${createDetailsField(
+                                    "RANK",
+                                    character.rank
+                                )}
+
+                                ${createDetailsField(
+                                    "CLASS",
+                                    character.class
+                                )}
+
+                                ${createDetailsField(
+                                    "CLEARANCE",
+                                    character.clearance
+                                )}
+
+                                ${createDetailsField(
+                                    "LOCATION",
+                                    character.location
+                                )}
+                                ${createDetailsField("STATUS", character.status)}
+
+                            </div>
+
+                            ${
+                                character.status &&
+                                character.status !== "ACTIVE"
+                                    ? `
+                                        <div class="details-status">
+                                            STATUS // ${escapeHTML(character.status)}
+                                        </div>
+                                    `
+                                    : ""
+                            }
+
+                            <div class="details-blurb">
+
+                                <div class="details-blurb-label">
+                                    PERSONNEL SUMMARY
+                                </div>
+
+                                <p>
+                                    ${escapeHTML(character.description)}
+                                </p>
+
                             </div>
                         `
-                        : ""
+                        : `
+                            <div class="details-meta">
+
+                                ${createDetailsField("OBJECT TYPE", character.object_class)}
+                                ${createDetailsField("CLEARANCE LEVEL", character.clearance)}
+                                ${createDetailsField("TYPE", character.anomalyType)}
+                                ${createDetailsField("LOCATION", character.location)}
+                                ${createDetailsField("CONTAINMENT%", `${getContainmentPercent(character.containment)}%`)}
+                                ${createDetailsField("STATUS", character.status)}
+                            </div>
+
+                            ${
+                                character.status &&
+                                character.status !== "ACTIVE"
+                                    ? `
+                                        <div class="details-status">
+                                            STATUS // ${escapeHTML(character.status)}
+                                        </div>
+                                    `
+                                    : ""
+                            }
+
+                            <div class="details-blurb">
+
+                                <div class="details-blurb-label">
+                                    ANOMALOUS SUMMARY
+                                </div>
+
+                                <p>
+                                    ${escapeHTML(character.blurb)}
+                                </p>
+
+                            </div>
+
+                            ${
+                                character.tags
+                                    ? `
+                                        <div class="details-blurb">
+
+                                            <div class="details-blurb-label">
+                                                TAGS
+                                            </div>
+
+                                            <p>
+                                                ${escapeHTML(character.tags)}
+                                            </p>
+
+                                        </div>
+                                    `
+                                    : ""
+                            }
+                        `
                 }
 
             </div>
 
+            ${
+                character.image
+                    ? `
+                        <div class="details-portrait">
+                            <img
+                                src="${escapeHTML(character.image)}"
+                                alt="${
+                                    escapeHTML(
+                                        character.name ||
+                                        character.codename ||
+                                        getAnomalyDesignation(character)
+                                    )
+                                }"
+                                loading="lazy"
+                            >
+                        </div>
+                    `
+                    : ""
+            }
 
-            <!-- CHARACTER INFORMATION -->
-            <div class="details-meta">
-
-                ${createDetailsField("DEPARTMENT", character.department)}
-
-                ${createDetailsField("DIVISION", character.division)}
-
-                ${createDetailsField("RANK", character.rank)}
-
-                ${createDetailsField("CLASS", character.class)}
-
-                ${createDetailsField("CLEARANCE", character.clearance)}
-
-                ${createDetailsField("LOCATION", character.location)}
-
-            </div>
-
-
-            <!-- PERSONNEL SUMMARY -->
-            <div class="details-blurb">
-
-                <div class="details-blurb-label">
-                    PERSONNEL SUMMARY
-                </div>
-
-                <p>
-                    ${escapeHTML(character.description)}
-                </p>
-
-            </div>
-
-
-            <!-- DELTA GREEN -->
             ${
                 hasDeltaGreenData(character)
                     ? `
                         <details class="delta-green-panel">
 
                             <summary>
-
                                 <span class="delta-green-indicator"></span>
-
                                 SHOW DICE SHEET
-
                                 <span class="delta-green-arrow">+</span>
-
                             </summary>
-
 
                             <div class="delta-green-content">
 
-                                <!-- CORE STATS -->
                                 <div class="dg-core">
 
                                     <div class="dg-stat">
-
-                                        <span class="dg-label">
-                                            HP MAX
-                                        </span>
-
+                                        <span class="dg-label">HP MAX</span>
                                         <span class="dg-value ${getDGAttributeClass(character.dg_hp)}">
                                             ${escapeHTML(String(character.dg_hp || "—"))}
                                         </span>
-
                                     </div>
 
-
                                     <div class="dg-stat">
-
-                                        <span class="dg-label">
-                                            WP MAX
-                                        </span>
-
+                                        <span class="dg-label">WP MAX</span>
                                         <span class="dg-value ${getDGAttributeClass(character.dg_wp)}">
                                             ${escapeHTML(String(character.dg_wp || "—"))}
                                         </span>
-
                                     </div>
 
-
                                     <div class="dg-stat">
-
-                                        <span class="dg-label">
-                                            SAN MAX
-                                        </span>
-
+                                        <span class="dg-label">SAN MAX</span>
                                         <span
                                             class="dg-value"
                                             style="--stat-value: ${Number(character.dg_san) || 0};"
                                         >
                                             ${escapeHTML(String(character.dg_san || "—"))}
                                         </span>
-
                                     </div>
 
                                 </div>
 
-
-                                <!-- ATTRIBUTES -->
                                 <div class="dg-attributes">
 
                                     <div class="dg-stat">
@@ -1244,12 +1655,8 @@ function createCharacterRecord(character) {
 
                                 </div>
 
-
-                                <!-- SKILLS -->
                                 <div class="dg-skills">
-
                                     ${createDeltaGreenSkills(character)}
-
                                 </div>
 
                             </div>
@@ -1260,41 +1667,42 @@ function createCharacterRecord(character) {
                         <div class="delta-green-panel no-dice-sheet">
 
                             <div class="delta-green-no-sheet">
-
                                 <span class="delta-green-indicator"></span>
-
                                 NO APPROVED DICE SHEET
-
                             </div>
 
                         </div>
                     `
             }
 
-
         </div>
     `;
 
     row.addEventListener("click", () => {
-        const wasExpanded = record.classList.contains("expanded");
 
-        // Close every other open record
+        const wasExpanded =
+            record.classList.contains("expanded");
+
         document
             .querySelectorAll(".character-record.expanded")
             .forEach(openRecord => {
+
                 openRecord.classList.remove("expanded");
 
-                const openRow = openRecord.querySelector(".character-row");
+                const openRow =
+                    openRecord.querySelector(".character-row");
+
                 if (openRow) {
                     openRow.classList.remove("expanded");
                 }
+
             });
 
-        // Open the clicked record unless it was already open
         if (!wasExpanded) {
             record.classList.add("expanded");
             row.classList.add("expanded");
         }
+
     });
 
     record.appendChild(row);
@@ -1302,6 +1710,7 @@ function createCharacterRecord(character) {
 
     return record;
 }
+
 
 function getStatusIcon(status) {
 
@@ -1343,6 +1752,39 @@ function getStatusIcon(status) {
     }
 
 }
+
+function getAnomalyDesignation(character) {
+    const catalog = String(character.catalog || "").trim();
+    const id = String(character.id || "").trim();
+
+    if (!catalog) return id;
+    if (!id) return catalog;
+
+    return `${catalog}-${id}`;
+}
+
+function getContainmentPercent(value) {
+    const percent = parseFloat(
+        String(value ?? "").replace("%", "").trim()
+    );
+
+    if (Number.isNaN(percent)) {
+        return 0;
+    }
+
+    return Math.max(0, Math.min(100, percent));
+}
+
+function getContainmentColor(value) {
+    const percent = getContainmentPercent(value) / 100;
+
+    const r = Math.round(51 + (255 - 51) * percent);
+    const g = Math.round(51 + (69 - 51) * percent);
+    const b = Math.round(51 + (69 - 51) * percent);
+
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
 
 /* =========================================================
    DETAIL FIELD
