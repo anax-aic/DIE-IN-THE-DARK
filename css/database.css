@@ -645,7 +645,10 @@
 .table-header,
 .character-row {
     display: grid;
+}
 
+.table-header.human-layout,
+.character-row.human-layout {
     grid-template-columns:
         70px
         minmax(180px, 1.6fr)
@@ -656,6 +659,16 @@
         90px
         80px;
 }
+
+.table-header.anomaly-layout,
+.character-row.anomaly-layout {
+    grid-template-columns:
+        75px
+        55px
+        300px
+        repeat(5, minmax(0, 1fr));
+}
+
 
 /* ---------------------------------------------------------
    TABLE HEADER
@@ -727,6 +740,10 @@
 }
 
 
+
+
+
+
 /* ---------------------------------------------------------
    ROW CONTENT
    --------------------------------------------------------- */
@@ -747,7 +764,15 @@
 .character-row .character-division,
 .character-row .character-rank,
 .character-row .character-clearance,
-.character-row .character-location {
+.character-row .character-location,
+.character-row .anomaly-catalog,
+.character-row .anomaly-id,
+.character-row .anomaly-codename,
+.character-row .anomaly-type,
+.character-row .anomaly-object-class,
+.character-row .anomaly-clearance,
+.character-row .anomaly-containment,
+.character-row .anomaly-location {
     transition:
         color 0.7s ease,
         text-shadow 0.7s ease;
@@ -764,7 +789,15 @@
 .character-row:hover .character-division,
 .character-row:hover .character-rank,
 .character-row:hover .character-clearance,
-.character-row:hover .character-location {
+.character-row:hover .character-location,
+.character-row:hover .anomaly-catalog,
+.character-row:hover .anomaly-id,
+.character-row:hover .anomaly-codename,
+.character-row:hover .anomaly-type,
+.character-row:hover .anomaly-object-class,
+.character-row:hover .anomaly-clearance,
+.character-row:hover .anomaly-containment,
+.character-row:hover .anomaly-location  {
     color: var(--red-bright) !important;
 
     text-shadow:
@@ -804,11 +837,12 @@
 .character-id {
     font-family: var(--font-mono);
     font-size: 9px;
-    color: #777 !important;
+    color: #777;
 }
 
 
-.character-name {
+.character-name,
+.anomaly-codename {
     position: relative;
     display: flex;
     align-items: center;
@@ -820,7 +854,7 @@
     font-size: 15px;
     letter-spacing: 0.04em;
 
-    color: #ddd !important;
+    color: #ddd;
 }
 
 .name-primary {
@@ -906,8 +940,6 @@
 }
 
 
-/* Hover restores the normal row hover appearance */
-
 .character-row.is-muted:hover .character-id,
 .character-row.is-muted:hover .character-name,
 .character-row.is-muted:hover .character-faction,
@@ -915,12 +947,19 @@
 .character-row.is-muted:hover .character-division,
 .character-row.is-muted:hover .character-rank,
 .character-row.is-muted:hover .character-clearance,
-.character-row.is-muted:hover .character-location {
+.character-row.is-muted:hover .character-location,
+.character-row.is-muted:hover .anomaly-catalog,
+.character-row.is-muted:hover .anomaly-id,
+.character-row.is-muted:hover .anomaly-codename,
+.character-row.is-muted:hover .anomaly-type,
+.character-row.is-muted:hover .anomaly-object-class,
+.character-row.is-muted:hover .anomaly-clearance,
+.character-row.is-muted:hover .anomaly-containment,
+.character-row.is-muted:hover .anomaly-location {
     color: var(--red-bright) !important;
-
     text-shadow:
-        0 0 5px rgba(197, 43, 43, 0.45),
-        0 0 10px rgba(197, 43, 43, 0.2);
+        0 0 5px rgba(197,43,43,0.45),
+        0 0 10px rgba(197,43,43,0.2);
 }
 
 /* ---------------------------------------------------------
@@ -936,7 +975,7 @@
     font-family: var(--font-mono);
     font-size: 9px;
     letter-spacing: 0.08em;
-    color: #777 !important;
+    color: #777;
 }
 
 /* ---------------------------------------------------------
@@ -1087,6 +1126,39 @@
     font-size: 13px;
     line-height: 1.65;
     color: #888;
+}
+
+.details-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 28px 50px;
+    align-items: start;
+}
+
+.details-main {
+    min-width: 0;
+}
+
+.details-portrait {
+    width: 220px;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border: 1px solid #333;
+    background: #0d0d0d;
+}
+
+.details-portrait img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: grayscale(20%);
+}
+
+.details-body > .delta-green-panel {
+    grid-column: 1 / -1;
+    width: 100%;
 }
 
 /* ========================================
@@ -1508,7 +1580,6 @@
 /* =========================================================
    MOBILE
    ========================================================= */
-
 @media (max-width: 800px) {
 
     .database-page {
@@ -1536,10 +1607,10 @@
         min-width: 0;
     }
 
-    .table-header,
-    .character-row {
-        display: grid;
+    /* HUMAN */
 
+    .table-header.human-layout,
+    .character-row.human-layout {
         grid-template-columns:
             70px
             minmax(180px, 1.6fr)
@@ -1549,6 +1620,20 @@
             minmax(110px, 1fr)
             90px
             minmax(110px, 1fr);
+    }
+
+    /* ANOMALY */
+
+    .table-header.anomaly-layout,
+    .character-row.anomaly-layout {
+        grid-template-columns:
+            90px
+            70px
+            minmax(180px, 1.5fr)
+            minmax(100px, 1fr)
+            minmax(130px, 1.15fr)
+            100px
+            110px;
     }
 
     .table-header .faction-cell,
@@ -1561,7 +1646,6 @@
     .details-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-
 }
 
 @media (max-width: 520px) {
@@ -1592,10 +1676,8 @@
         grid-template-columns: 1fr;
     }
 
-    .table-header,
-    .character-row {
-        display: grid;
-
+    .table-header.human-layout,
+    .character-row.human-layout {
         grid-template-columns:
             70px
             minmax(180px, 1.6fr)
@@ -1607,6 +1689,17 @@
             42px;
     }
 
+    .table-header.anomaly-layout,
+    .character-row.anomaly-layout {
+        grid-template-columns:
+            70px
+            60px
+            minmax(150px, 1.5fr)
+            minmax(90px, 1fr)
+            minmax(110px, 1fr)
+            80px
+            90px;
+    }
     .table-header .table-cell {
         font-weight: 700;
     }
@@ -1626,3 +1719,20 @@
 
 }
 
+@media (max-width: 700px) {
+
+    .details-body {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .details-portrait {
+        width: 180px;
+        justify-self: start;
+    }
+
+    .details-body > .delta-green-panel {
+        grid-column: 1;
+    }
+
+}
