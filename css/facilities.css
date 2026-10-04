@@ -431,6 +431,32 @@ body {
     animation-delay: 0.45s;
 }
 
+.map-loader .loader-progress span:nth-child(5) {
+    animation-delay: 0.60s;
+}
+
+.map-loader .loader-progress span:nth-child(6) {
+    animation-delay: 0.75s;
+}
+
+.map-loader .loader-progress span:nth-child(7) {
+    animation-delay: 0.90s;
+}
+
+.map-loader .loader-progress span:nth-child(8) {
+    animation-delay: 1.05s;
+}
+
+.map-loader .loader-progress span:nth-child(9) {
+    animation-delay: 1.20s;
+}
+
+.map-loader .loader-progress span:nth-child(10) {
+    animation-delay: 1.35s;
+}
+
+
+
 
 @keyframes facility-loader-pulse {
     0%,
