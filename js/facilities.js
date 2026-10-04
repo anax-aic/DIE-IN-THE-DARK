@@ -1010,7 +1010,7 @@ function renderFacilityMarkers() {
 
 
             const iconPath =
-                `../images/${siteName}.png`;
+                `images/${siteName}.png`;
 
 
             marker.innerHTML = `
