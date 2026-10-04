@@ -15,6 +15,23 @@ const ANOMALY_SHEET_URL =
 
 let characters = [];
 
+const fieldIcons = {
+
+    location: {
+        "SITE-010": "../images/site-01.png",
+        "Site-190": "../images/icons/sites/site-19.png",
+        "Site-640": "../images/icons/sites/site-64.png"
+    },
+
+    department: {
+        "Medical0": "../images/MED.png",
+        "Security0": "../images/SEC.png",
+        "RESEARCH0": "../images/RES.png"
+    }
+
+};
+
+
 /* =========================================================
 DELTA GREEN CONFIGURATION
 ========================================================= */
@@ -68,6 +85,9 @@ const DG_SPECIALIZED_SKILLS = [
 ["SCIENCE", "Science"]
 ];
 
+
+
+
 /* =========================================================
 STATE
 ========================================================= */
@@ -107,6 +127,68 @@ document.getElementById("anomaly-count");
 const tabs =
 document.querySelectorAll(".database-tab");
 
+const loaderMessages = [
+    "> ESTABLISHING SCIPNET CONNECTION...",
+    "> AUTHENTICATING ARCHIVAL NODE...",
+    "> ACCESSING DEEPWELL ARCHIVES...",
+    "> RETRIEVING PERSONNEL RECORDS...",
+    "> DECRYPTING RECORD INDEX...",
+    "> VERIFYING DATA INTEGRITY...",
+    "> SYNCHRONIZING CATALOG...",
+    "> DOES THE BLACK MOON HOWL?"
+];
+
+let loaderInterval = null;
+let loaderMessageIndex = 0;
+
+function startLoader() {
+
+    const loader = document.getElementById("database-loader");
+    const message = document.getElementById("loader-message");
+
+    if (!loader || !message) return;
+
+    loader.style.display = "flex";
+
+    loaderMessageIndex = 0;
+    message.textContent = loaderMessages[loaderMessageIndex];
+
+    loaderInterval = setInterval(() => {
+
+        message.style.opacity = "0";
+
+        setTimeout(() => {
+
+            loaderMessageIndex =
+                (loaderMessageIndex + 1) % loaderMessages.length;
+
+            message.textContent =
+                loaderMessages[loaderMessageIndex];
+
+            message.style.opacity = "1";
+
+        }, 150);
+
+    }, 700);
+}
+
+
+function stopLoader() {
+
+    const loader = document.getElementById("database-loader");
+
+    if (loaderInterval) {
+        clearInterval(loaderInterval);
+        loaderInterval = null;
+    }
+
+    if (loader) {
+        loader.style.display = "none";
+    }
+}
+
+
+
 /* =========================================================
 INITIALIZATION
 ========================================================= */
@@ -132,208 +214,227 @@ renderCharacters();
 
 
 });
-
 /* =========================================================
-DATA LOADING
-========================================================= */
+   DATA LOADING
+   ========================================================= */
 
 async function loadCharacters() {
-try {
-const [humanResponse, anomalyResponse] =
-await Promise.all([
-fetch(HUMAN_SHEET_URL),
-fetch(ANOMALY_SHEET_URL)
-]);
+
+    try {
+
+        startLoader();
+
+        const [humanResponse, anomalyResponse] =
+            await Promise.all([
+                fetch(HUMAN_SHEET_URL),
+                fetch(ANOMALY_SHEET_URL)
+            ]);
 
 
-    if (!humanResponse.ok) {
-        throw new Error(
-            `HUMAN sheet returned ${humanResponse.status}`
+        if (!humanResponse.ok) {
+            throw new Error(
+                `HUMAN sheet returned ${humanResponse.status}`
+            );
+        }
+
+        if (!anomalyResponse.ok) {
+            throw new Error(
+                `ANOMALY sheet returned ${anomalyResponse.status}`
+            );
+        }
+
+
+        const humanCSV =
+            await humanResponse.text();
+
+        const anomalyCSV =
+            await anomalyResponse.text();
+
+
+        const humanCharacters =
+            parseCSV(humanCSV).map(row => ({
+
+                id: row.id || "",
+                name: row.name || "",
+                callsign: row.callsign || "",
+                image: row.image || "",
+
+                type: "HUMAN",
+                class: row.class || "",
+
+                faction: row.faction || "",
+                department: row.department || "",
+                division: row.division || "",
+                rank: row.rank || "",
+                clearance: row.clearance || "",
+                status: row.status || "",
+                location: row.location || "",
+
+                player_id: row.player_id || "",
+                description: row.description || "",
+
+
+                dg_hp: row.dg_hp || "",
+                dg_wp: row.dg_wp || "",
+                dg_san: row.dg_san || "",
+
+                dg_str: row.dg_str || "",
+                dg_con: row.dg_con || "",
+                dg_dex: row.dg_dex || "",
+                dg_int: row.dg_int || "",
+                dg_pow: row.dg_pow || "",
+                dg_cha: row.dg_cha || "",
+
+
+                dg_accounting: row.dg_accounting || "",
+                dg_alertness: row.dg_alertness || "",
+                dg_anthropology: row.dg_anthropology || "",
+                dg_archeology: row.dg_archeology || "",
+                dg_artillery: row.dg_artillery || "",
+                dg_athletics: row.dg_athletics || "",
+                dg_bureaucracy: row.dg_bureaucracy || "",
+                dg_computer_science: row.dg_computer_science || "",
+                dg_criminology: row.dg_criminology || "",
+                dg_demolitions: row.dg_demolitions || "",
+                dg_disguise: row.dg_disguise || "",
+                dg_dodge: row.dg_dodge || "",
+                dg_drive: row.dg_drive || "",
+                dg_firearms: row.dg_firearms || "",
+                dg_first_aid: row.dg_first_aid || "",
+                dg_forensics: row.dg_forensics || "",
+                dg_heavy_machinery: row.dg_heavy_machinery || "",
+                dg_heavy_weapons: row.dg_heavy_weapons || "",
+                dg_history: row.dg_history || "",
+                dg_humint: row.dg_humint || "",
+                dg_law: row.dg_law || "",
+                dg_medicine: row.dg_medicine || "",
+                dg_melee_weapons: row.dg_melee_weapons || "",
+                dg_navigate: row.dg_navigate || "",
+                dg_occult: row.dg_occult || "",
+                dg_persuade: row.dg_persuade || "",
+                dg_pharmacy: row.dg_pharmacy || "",
+                dg_psychotherapy: row.dg_psychotherapy || "",
+                dg_ride: row.dg_ride || "",
+                dg_search: row.dg_search || "",
+                dg_sigint: row.dg_sigint || "",
+                dg_stealth: row.dg_stealth || "",
+                dg_surgery: row.dg_surgery || "",
+                dg_survival: row.dg_survival || "",
+                dg_swim: row.dg_swim || "",
+                dg_unarmed_combat: row.dg_unarmed_combat || "",
+                dg_unnatural: row.dg_unnatural || "",
+
+                dg_art: row.dg_art || "",
+                dg_craft: row.dg_craft || "",
+                dg_foreign_language: row.dg_foreign_language || "",
+                dg_military_science: row.dg_military_science || "",
+                dg_pilot: row.dg_pilot || "",
+                dg_science: row.dg_science || ""
+
+            }));
+
+
+        const anomalyCharacters =
+            parseCSV(anomalyCSV).map(row => ({
+
+                catalog: row.catalog || "",
+                id: row.id || "",
+                codename: row.codename || "",
+
+                type: "ANOMALY",
+
+                anomalyType: row.type || "",
+                object_class: row.object_class || "",
+                clearance: row.clearance || "",
+                containment: row.containment || "",
+                location: row.location || "",
+                status: row.status || "",
+
+                image: row.image || "",
+                player_id: row.player_id || "",
+                blurb: row.blurb || "",
+                tags: row.tags || "",
+
+
+                dg_hp: row.dg_hp || "",
+                dg_wp: row.dg_wp || "",
+                dg_san: row.dg_san || "",
+
+                dg_str: row.dg_str || "",
+                dg_con: row.dg_con || "",
+                dg_dex: row.dg_dex || "",
+                dg_int: row.dg_int || "",
+                dg_pow: row.dg_pow || "",
+                dg_cha: row.dg_cha || "",
+
+
+                dg_accounting: row.dg_accounting || "",
+                dg_alertness: row.dg_alertness || "",
+                dg_anthropology: row.dg_anthropology || "",
+                dg_archeology: row.dg_archeology || "",
+                dg_artillery: row.dg_artillery || "",
+                dg_athletics: row.dg_athletics || "",
+                dg_bureaucracy: row.dg_bureaucracy || "",
+                dg_computer_science: row.dg_computer_science || "",
+                dg_criminology: row.dg_criminology || "",
+                dg_demolitions: row.dg_demolitions || "",
+                dg_disguise: row.dg_disguise || "",
+                dg_dodge: row.dg_dodge || "",
+                dg_drive: row.dg_drive || "",
+                dg_firearms: row.dg_firearms || "",
+                dg_first_aid: row.dg_first_aid || "",
+                dg_forensics: row.dg_forensics || "",
+                dg_heavy_machinery: row.dg_heavy_machinery || "",
+                dg_heavy_weapons: row.dg_heavy_weapons || "",
+                dg_history: row.dg_history || "",
+                dg_humint: row.dg_humint || "",
+                dg_law: row.dg_law || "",
+                dg_medicine: row.dg_medicine || "",
+                dg_melee_weapons: row.dg_melee_weapons || "",
+                dg_navigate: row.dg_navigate || "",
+                dg_occult: row.dg_occult || "",
+                dg_persuade: row.dg_persuade || "",
+                dg_pharmacy: row.dg_pharmacy || "",
+                dg_psychotherapy: row.dg_psychotherapy || "",
+                dg_ride: row.dg_ride || "",
+                dg_search: row.dg_search || "",
+                dg_sigint: row.dg_sigint || "",
+                dg_stealth: row.dg_stealth || "",
+                dg_surgery: row.dg_surgery || "",
+                dg_survival: row.dg_survival || "",
+                dg_swim: row.dg_swim || "",
+                dg_unarmed_combat: row.dg_unarmed_combat || "",
+                dg_unnatural: row.dg_unnatural || "",
+
+                dg_art: row.dg_art || "",
+                dg_craft: row.dg_craft || "",
+                dg_foreign_language: row.dg_foreign_language || "",
+                dg_military_science: row.dg_military_science || "",
+                dg_pilot: row.dg_pilot || "",
+                dg_science: row.dg_science || ""
+
+            }));
+
+
+        characters = [
+            ...humanCharacters,
+            ...anomalyCharacters
+        ];
+
+
+        stopLoader();
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load database:",
+            error
         );
+
+        characters = [];
+
+        stopLoader();
     }
-
-    if (!anomalyResponse.ok) {
-        throw new Error(
-            `ANOMALY sheet returned ${anomalyResponse.status}`
-        );
-    }
-
-    const humanCSV =
-        await humanResponse.text();
-
-    const anomalyCSV =
-        await anomalyResponse.text();
-
-    const humanCharacters =
-        parseCSV(humanCSV).map(row => ({
-            id: row.id || "",
-            name: row.name || "",
-            callsign: row.callsign || "",
-            image: row.image || "",
-
-            type: "HUMAN",
-            class: row.class || "",
-
-            faction: row.faction || "",
-            department: row.department || "",
-            division: row.division || "",
-            rank: row.rank || "",
-            clearance: row.clearance || "",
-            status: row.status || "",
-            location: row.location || "",
-
-            player_id: row.player_id || "",
-            description: row.description || "",
-
-            dg_hp: row.dg_hp || "",
-            dg_wp: row.dg_wp || "",
-            dg_san: row.dg_san || "",
-
-            dg_str: row.dg_str || "",
-            dg_con: row.dg_con || "",
-            dg_dex: row.dg_dex || "",
-            dg_int: row.dg_int || "",
-            dg_pow: row.dg_pow || "",
-            dg_cha: row.dg_cha || "",
-
-            dg_accounting: row.dg_accounting || "",
-            dg_alertness: row.dg_alertness || "",
-            dg_anthropology: row.dg_anthropology || "",
-            dg_archeology: row.dg_archeology || "",
-            dg_artillery: row.dg_artillery || "",
-            dg_athletics: row.dg_athletics || "",
-            dg_bureaucracy: row.dg_bureaucracy || "",
-            dg_computer_science: row.dg_computer_science || "",
-            dg_criminology: row.dg_criminology || "",
-            dg_demolitions: row.dg_demolitions || "",
-            dg_disguise: row.dg_disguise || "",
-            dg_dodge: row.dg_dodge || "",
-            dg_drive: row.dg_drive || "",
-            dg_firearms: row.dg_firearms || "",
-            dg_first_aid: row.dg_first_aid || "",
-            dg_forensics: row.dg_forensics || "",
-            dg_heavy_machinery: row.dg_heavy_machinery || "",
-            dg_heavy_weapons: row.dg_heavy_weapons || "",
-            dg_history: row.dg_history || "",
-            dg_humint: row.dg_humint || "",
-            dg_law: row.dg_law || "",
-            dg_medicine: row.dg_medicine || "",
-            dg_melee_weapons: row.dg_melee_weapons || "",
-            dg_navigate: row.dg_navigate || "",
-            dg_occult: row.dg_occult || "",
-            dg_persuade: row.dg_persuade || "",
-            dg_pharmacy: row.dg_pharmacy || "",
-            dg_psychotherapy: row.dg_psychotherapy || "",
-            dg_ride: row.dg_ride || "",
-            dg_search: row.dg_search || "",
-            dg_sigint: row.dg_sigint || "",
-            dg_stealth: row.dg_stealth || "",
-            dg_surgery: row.dg_surgery || "",
-            dg_survival: row.dg_survival || "",
-            dg_swim: row.dg_swim || "",
-            dg_unarmed_combat: row.dg_unarmed_combat || "",
-            dg_unnatural: row.dg_unnatural || "",
-
-            dg_art: row.dg_art || "",
-            dg_craft: row.dg_craft || "",
-            dg_foreign_language: row.dg_foreign_language || "",
-            dg_military_science: row.dg_military_science || "",
-            dg_pilot: row.dg_pilot || "",
-            dg_science: row.dg_science || ""
-        }));
-
-    const anomalyCharacters =
-        parseCSV(anomalyCSV).map(row => ({
-            catalog: row.catalog || "",
-            id: row.id || "",
-            codename: row.codename || "",
-
-            type: "ANOMALY",
-
-            anomalyType: row.type || "",
-            object_class: row.object_class || "",
-            clearance: row.clearance || "",
-            containment: row.containment || "",
-            location: row.location || "",
-            status: row.status || "",
-
-            image: row.image || "",
-            player_id: row.player_id || "",
-            blurb: row.blurb || "",
-            tags: row.tags || "",
-
-            dg_hp: row.dg_hp || "",
-            dg_wp: row.dg_wp || "",
-            dg_san: row.dg_san || "",
-
-            dg_str: row.dg_str || "",
-            dg_con: row.dg_con || "",
-            dg_dex: row.dg_dex || "",
-            dg_int: row.dg_int || "",
-            dg_pow: row.dg_pow || "",
-            dg_cha: row.dg_cha || "",
-
-            dg_accounting: row.dg_accounting || "",
-            dg_alertness: row.dg_alertness || "",
-            dg_anthropology: row.dg_anthropology || "",
-            dg_archeology: row.dg_archeology || "",
-            dg_artillery: row.dg_artillery || "",
-            dg_athletics: row.dg_athletics || "",
-            dg_bureaucracy: row.dg_bureaucracy || "",
-            dg_computer_science: row.dg_computer_science || "",
-            dg_criminology: row.dg_criminology || "",
-            dg_demolitions: row.dg_demolitions || "",
-            dg_disguise: row.dg_disguise || "",
-            dg_dodge: row.dg_dodge || "",
-            dg_drive: row.dg_drive || "",
-            dg_firearms: row.dg_firearms || "",
-            dg_first_aid: row.dg_first_aid || "",
-            dg_forensics: row.dg_forensics || "",
-            dg_heavy_machinery: row.dg_heavy_machinery || "",
-            dg_heavy_weapons: row.dg_heavy_weapons || "",
-            dg_history: row.dg_history || "",
-            dg_humint: row.dg_humint || "",
-            dg_law: row.dg_law || "",
-            dg_medicine: row.dg_medicine || "",
-            dg_melee_weapons: row.dg_melee_weapons || "",
-            dg_navigate: row.dg_navigate || "",
-            dg_occult: row.dg_occult || "",
-            dg_persuade: row.dg_persuade || "",
-            dg_pharmacy: row.dg_pharmacy || "",
-            dg_psychotherapy: row.dg_psychotherapy || "",
-            dg_ride: row.dg_ride || "",
-            dg_search: row.dg_search || "",
-            dg_sigint: row.dg_sigint || "",
-            dg_stealth: row.dg_stealth || "",
-            dg_surgery: row.dg_surgery || "",
-            dg_survival: row.dg_survival || "",
-            dg_swim: row.dg_swim || "",
-            dg_unarmed_combat: row.dg_unarmed_combat || "",
-            dg_unnatural: row.dg_unnatural || "",
-
-            dg_art: row.dg_art || "",
-            dg_craft: row.dg_craft || "",
-            dg_foreign_language: row.dg_foreign_language || "",
-            dg_military_science: row.dg_military_science || "",
-            dg_pilot: row.dg_pilot || "",
-            dg_science: row.dg_science || ""
-        }));
-
-    characters = [
-        ...humanCharacters,
-        ...anomalyCharacters
-    ];
-
-} catch (error) {
-    console.error(
-        "Failed to load database:",
-        error
-    );
-
-    characters = [];
-}
-
-
 }
 
 /* =========================================================
@@ -1211,6 +1312,8 @@ details.innerHTML = `
             }
         </span>
 
+        ${createCharacterIcons(character)}
+
         <span class="details-classification">
             ${
                 character.player_id
@@ -1224,11 +1327,11 @@ details.innerHTML = `
     </div>
 
     <div class="details-body">
-
+        
         <div class="details-main">
-
+        
             <div class="details-identity">
-
+            
                 <div class="details-name">
                     ${
                         currentType === "HUMAN"
@@ -1455,30 +1558,76 @@ DETAIL FIELDS
 ========================================================= */
 
 function createDetailsField(label, value) {
-if (
-value === null ||
-value === undefined ||
-String(value).trim() === ""
-) {
-return "";
+
+    if (
+        value === null ||
+        value === undefined ||
+        String(value).trim() === ""
+    ) {
+        return "";
+    }
+
+
+    return `
+        <div class="details-field">
+
+            <span class="details-label">
+                ${escapeHTML(label)}
+            </span>
+
+            <span class="details-value">
+                ${escapeHTML(String(value))}
+            </span>
+
+        </div>
+    `;
 }
 
+function createCharacterIcons(character) {
 
-return `
-    <div class="details-field">
+    const icons = [];
 
-        <span class="details-label">
-            ${escapeHTML(label)}
-        </span>
+    const location =
+        String(character.location || "").trim();
 
-        <span class="details-value">
-            ${escapeHTML(String(value))}
-        </span>
-
-    </div>
-`;
+    const department =
+        String(character.department || "").trim();
 
 
+    if (
+        fieldIcons.location &&
+        fieldIcons.location[location]
+    ) {
+        icons.push(fieldIcons.location[location]);
+    }
+
+
+    if (
+        fieldIcons.department &&
+        fieldIcons.department[department]
+    ) {
+        icons.push(fieldIcons.department[department]);
+    }
+
+
+    if (icons.length === 0) {
+        return "";
+    }
+
+
+    return `
+        <div class="character-icons">
+
+            ${icons.map(icon => `
+                <img
+                    src="${escapeHTML(icon)}"
+                    class="character-icon"
+                    alt=""
+                >
+            `).join("")}
+
+        </div>
+    `;
 }
 
 /* =========================================================
