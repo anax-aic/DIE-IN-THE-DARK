@@ -13,6 +13,9 @@ const HUMAN_SHEET_URL =
 const ANOMALY_SHEET_URL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=1214065682&single=true&output=csv";
 
+const THAUMATURGY_SHEET_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=1715857676&single=true&output=csv";
+
 let characters = [];
 
 const fieldIcons = {
@@ -124,6 +127,9 @@ document.getElementById("human-count");
 const anomalyCount =
 document.getElementById("anomaly-count");
 
+const thaumaturgyCount =
+    document.getElementById("thaumaturgy-count");
+
 const tabs =
 document.querySelectorAll(".database-tab");
 
@@ -224,11 +230,15 @@ async function loadCharacters() {
 
         startLoader();
 
-        const [humanResponse, anomalyResponse] =
-            await Promise.all([
-                fetch(HUMAN_SHEET_URL),
-                fetch(ANOMALY_SHEET_URL)
-            ]);
+        const [
+            humanResponse,
+            anomalyResponse,
+            thaumaturgyResponse
+        ] = await Promise.all([
+            fetch(HUMAN_SHEET_URL),
+            fetch(ANOMALY_SHEET_URL),
+            fetch(THAUMATURGY_SHEET_URL)
+        ]);
 
 
         if (!humanResponse.ok) {
@@ -243,6 +253,11 @@ async function loadCharacters() {
             );
         }
 
+        if (!thaumaturgyResponse.ok) {
+            throw new Error(
+                `THAUMATURGY sheet returned ${thaumaturgyResponse.status}`
+            );
+        }
 
         const humanCSV =
             await humanResponse.text();
@@ -250,6 +265,8 @@ async function loadCharacters() {
         const anomalyCSV =
             await anomalyResponse.text();
 
+        const thaumaturgyCSV =
+            await thaumaturgyResponse.text();
 
         const humanCharacters =
             parseCSV(humanCSV).map(row => ({
@@ -415,10 +432,22 @@ async function loadCharacters() {
 
             }));
 
+        const thaumaturgyRecords =
+            parseCSV(thaumaturgyCSV).map(row => ({
+                name: row.name || "",
+                thaumaturgyType: row.type || "",
+                complexity: row.complexity || "",
+                studyTime: row["study time"] || "",
+                activation: row.activation || "",
+                description: row.description || "",
+
+                type: "THAUMATURGY"
+            }));            
 
         characters = [
             ...humanCharacters,
-            ...anomalyCharacters
+            ...anomalyCharacters,
+            ...thaumaturgyRecords
         ];
 
 
@@ -568,25 +597,28 @@ event.target.value
 COUNTS
 ========================================================= */
 
+
 function updateCounts() {
-const humans =
-characters.filter(
-character => character.type === "HUMAN"
-);
+    const humans = characters.filter(
+        character => character.type === "HUMAN"
+    );
 
-
-const anomalies =
-    characters.filter(
+    const anomalies = characters.filter(
         character => character.type === "ANOMALY"
     );
 
-humanCount.textContent =
-    String(humans.length).padStart(2, "0");
+    const thaumaturgy = characters.filter(
+        character => character.type === "THAUMATURGY"
+    );
 
-anomalyCount.textContent =
-    String(anomalies.length).padStart(2, "0");
+    humanCount.textContent =
+        String(humans.length).padStart(2, "0");
 
+    anomalyCount.textContent =
+        String(anomalies.length).padStart(2, "0");
 
+    thaumaturgyCount.textContent =
+        String(thaumaturgy.length).padStart(2, "0");
 }
 
 /* =========================================================
@@ -600,25 +632,39 @@ document.getElementById("filter-container");
 
 container.innerHTML = "";
 
-const filterFields =
-    currentType === "HUMAN"
-        ? [
-            { key: "faction", label: "FACTION" },
-            { key: "department", label: "DEPARTMENT" },
-            { key: "division", label: "DIVISION" },
-            { key: "rank", label: "RANK" },
-            { key: "clearance", label: "CLEARANCE" },
-            { key: "location", label: "LOCATION" },
-            { key: "status", label: "STATUS" }
-        ]
-        : [
-            { key: "catalog", label: "CATALOG" },
-            { key: "object_class", label: "OBJECT CLASS" },
-            { key: "clearance", label: "CLEARANCE" },
-            { key: "anomalyType", label: "TYPE" },
-            { key: "location", label: "LOCATION" },
-            { key: "status", label: "STATUS" }
-        ];
+let filterFields;
+
+if (currentType === "HUMAN") {
+
+    filterFields = [
+        { key: "faction", label: "FACTION" },
+        { key: "department", label: "DEPARTMENT" },
+        { key: "division", label: "DIVISION" },
+        { key: "rank", label: "RANK" },
+        { key: "clearance", label: "CLEARANCE" },
+        { key: "location", label: "LOCATION" },
+        { key: "status", label: "STATUS" }
+    ];
+
+} else if (currentType === "ANOMALY") {
+
+    filterFields = [
+        { key: "catalog", label: "CATALOG" },
+        { key: "object_class", label: "OBJECT CLASS" },
+        { key: "clearance", label: "CLEARANCE" },
+        { key: "anomalyType", label: "TYPE" },
+        { key: "location", label: "LOCATION" },
+        { key: "status", label: "STATUS" }
+    ];
+
+} else if (currentType === "THAUMATURGY") {
+
+    filterFields = [
+        { key: "thaumaturgyType", label: "TYPE" },
+        { key: "complexity", label: "COMPLEXITY" }
+    ];
+
+}
 
 filterFields.forEach(field => {
     const values = [
@@ -823,7 +869,9 @@ return characters.filter(character => {
             character.object_class,
             character.clearance,
             character.tags,
-            character.containment
+            character.containment,
+            character.description,
+            character.thaumaturgyType,
         ]
             .filter(Boolean)
             .join(" ")
@@ -857,44 +905,83 @@ TABLE
 ========================================================= */
 
 function renderTableHeader() {
-const header =
-document.getElementById("table-header");
+
+    const header =
+        document.getElementById("table-header");
 
 
-if (currentType === "HUMAN") {
-    header.className =
-        "table-header human-layout";
+    if (currentType === "HUMAN") {
 
-    header.innerHTML = `
-        <div class="table-cell id-cell">#</div>
-        <div class="table-cell name-cell">NAME</div>
-        <div class="table-cell faction-cell">FACTION</div>
-        <div class="table-cell department-cell">DEPARTMENT</div>
-        <div class="table-cell division-cell">DIVISION</div>
-        <div class="table-cell rank-cell">RANK</div>
-        <div class="table-cell clearance-cell">CLEARANCE</div>
-        <div class="table-cell location-cell">LOCATION</div>
-    `;
+        header.className =
+            "table-header human-layout";
 
-    return;
+        header.innerHTML = `
+            <div class="table-cell id-cell">#</div>
+            <div class="table-cell name-cell">NAME</div>
+            <div class="table-cell faction-cell">FACTION</div>
+            <div class="table-cell department-cell">DEPARTMENT</div>
+            <div class="table-cell division-cell">DIVISION</div>
+            <div class="table-cell rank-cell">RANK</div>
+            <div class="table-cell clearance-cell">CLEARANCE</div>
+            <div class="table-cell location-cell">LOCATION</div>
+        `;
+
+        return;
+    }
+
+
+    if (currentType === "ANOMALY") {
+
+        header.className =
+            "table-header anomaly-layout";
+
+        header.innerHTML = `
+            <div class="table-cell catalog-cell">CATALOG</div>
+            <div class="table-cell id-cell">ID</div>
+            <div class="table-cell codename-cell">CODENAME</div>
+            <div class="table-cell object-class-cell">OBJECT CLASS</div>
+            <div class="table-cell clearance-cell">CLEARANCE</div>
+            <div class="table-cell type-cell">TYPE</div>
+            <div class="table-cell containment-cell">CONTAINMENT</div>
+            <div class="table-cell location-cell">LOCATION</div>
+        `;
+
+        return;
+    }
+
+
+    if (currentType === "THAUMATURGY") {
+
+        header.className =
+            "table-header thaumaturgy-layout";
+
+        header.innerHTML = `
+            <div class="table-cell thaumaturgy-name-cell">
+                NAME
+            </div>
+
+            <div class="table-cell thaumaturgy-type-cell">
+                TYPE
+            </div>
+
+            <div class="table-cell thaumaturgy-complexity-cell">
+                COMPLEXITY
+            </div>
+
+            <div class="table-cell thaumaturgy-study-cell">
+                STUDY TIME
+            </div>
+
+            <div class="table-cell thaumaturgy-activation-cell">
+                ACTIVATION
+            </div>
+        `;
+
+        return;
+    }
+
 }
 
-header.className =
-    "table-header anomaly-layout";
-
-header.innerHTML = `
-    <div class="table-cell catalog-cell">CATALOG</div>
-    <div class="table-cell id-cell">ID</div>
-    <div class="table-cell codename-cell">CODENAME</div>
-    <div class="table-cell object-class-cell">OBJECT CLASS</div>
-    <div class="table-cell clearance-cell">CLEARANCE</div>
-    <div class="table-cell type-cell">TYPE</div>
-    <div class="table-cell containment-cell">CONTAINMENT</div>
-    <div class="table-cell location-cell">LOCATION</div>
-`;
-
-
-}
 
 /* =========================================================
 PAGINATION
@@ -1105,57 +1192,70 @@ CHARACTER RECORD
 ========================================================= */
 
 function createCharacterRecord(character) {
-const record =
-document.createElement("div");
 
+    const record =
+        document.createElement("div");
 
-record.className =
-    "character-record";
+    record.className =
+        "character-record";
 
-const row =
-    document.createElement("div");
+    const row =
+        document.createElement("div");
 
-if (currentType === "HUMAN") {
-    createHumanRow(row, character);
-} else {
-    createAnomalyRow(row, character);
-}
+    if (currentType === "HUMAN") {
 
-const details =
-    createCharacterDetails(character);
+        createHumanRow(row, character);
 
-row.addEventListener("click", () => {
-    const wasExpanded =
-        record.classList.contains("expanded");
+    } else if (currentType === "ANOMALY") {
 
-    document
-        .querySelectorAll(".character-record.expanded")
-        .forEach(openRecord => {
-            openRecord.classList.remove("expanded");
+        createAnomalyRow(row, character);
 
-            const openRow =
-                openRecord.querySelector(
-                    ".character-row"
-                );
+    } else if (currentType === "THAUMATURGY") {
 
-            if (openRow) {
-                openRow.classList.remove("expanded");
-            }
-        });
+        createThaumaturgyRow(row, character);
 
-    if (!wasExpanded) {
-        record.classList.add("expanded");
-        row.classList.add("expanded");
     }
-});
 
-record.appendChild(row);
-record.appendChild(details);
+    const details =
+        createCharacterDetails(character);
 
-return record;
+    row.addEventListener("click", () => {
 
+        const wasExpanded =
+            record.classList.contains("expanded");
+
+        document
+            .querySelectorAll(".character-record.expanded")
+            .forEach(openRecord => {
+
+                openRecord.classList.remove("expanded");
+
+                const openRow =
+                    openRecord.querySelector(
+                        ".character-row"
+                    );
+
+                if (openRow) {
+                    openRow.classList.remove("expanded");
+                }
+            });
+
+        if (!wasExpanded) {
+
+            record.classList.add("expanded");
+            row.classList.add("expanded");
+
+        }
+
+    });
+
+    record.appendChild(row);
+    record.appendChild(details);
+
+    return record;
 
 }
+
 
 /* =========================================================
 HUMAN ROW
@@ -1284,273 +1384,357 @@ row.innerHTML = `
 
 }
 
+
+function createThaumaturgyRow(row, character) {
+
+    row.className =
+        "character-row thaumaturgy-layout";
+
+    row.innerHTML = `
+        <div class="table-cell thaumaturgy-name-cell">
+            ${escapeHTML(character.name || "")}
+        </div>
+
+        <div class="table-cell thaumaturgy-type-cell">
+            ${escapeHTML(character.thaumaturgyType || "")}
+        </div>
+
+        <div class="table-cell thaumaturgy-complexity-cell">
+            ${escapeHTML(character.complexity || "")}
+        </div>
+
+        <div class="table-cell thaumaturgy-study-cell">
+            ${escapeHTML(character.studyTime || "")}
+        </div>
+
+        <div class="table-cell thaumaturgy-activation-cell">
+            ${escapeHTML(character.activation || "")}
+        </div>
+    `;
+
+}
+
+
+
+
+
 /* =========================================================
 CHARACTER DETAILS
 ========================================================= */
 
 function createCharacterDetails(character) {
-const details =
-document.createElement("div");
+    const details = document.createElement("div");
 
+    details.className = "character-details";
 
-details.className =
-    "character-details";
+    details.innerHTML = `
+        <div class="details-header">
 
-details.innerHTML = `
-    <div class="details-header">
-
-        <span class="details-designation">
-            ${
-                currentType === "HUMAN"
-                    ? `POI-${escapeHTML(
-                        String(character.id)
-                            .replace(/^POI-/i, "")
-                    )}`
-                    : escapeHTML(
-                        getAnomalyDesignation(character)
-                    )
-            }
-        </span>
-
-        ${createCharacterIcons(character)}
-
-        <span class="details-classification">
-            ${
-                character.player_id
-                    ? `SWANN ENTITY ${escapeHTML(
-                        character.player_id
-                    )}`
-                    : ""
-            }
-        </span>
-
-    </div>
-
-    <div class="details-body">
-        
-        <div class="details-main">
-        
-            <div class="details-identity">
-            
-                <div class="details-name">
-                    ${
-                        currentType === "HUMAN"
-                            ? escapeHTML(character.name)
-                            : escapeHTML(
-                                character.codename ||
+            <span class="details-designation">
+                ${
+                    currentType === "HUMAN"
+                        ? `POI-${escapeHTML(
+                            String(character.id)
+                                .replace(/^POI-/i, "")
+                        )}`
+                        : currentType === "ANOMALY"
+                            ? escapeHTML(
                                 getAnomalyDesignation(character)
                             )
+                            : ""
+                }
+            </span>
+
+            ${createCharacterIcons(character)}
+
+            <span class="details-classification">
+                ${
+                    character.player_id
+                        ? `SWANN ENTITY ${escapeHTML(
+                            character.player_id
+                        )}`
+                        : ""
+                }
+            </span>
+
+        </div>
+
+        <div class="details-body ${character.image ? "has-image" : "no-image"}">
+
+            <div class="details-main">
+
+                <div class="details-identity">
+
+                    <div class="details-name ${
+                        currentType === "THAUMATURGY"
+                            ? "thaumaturgy-details-name"
+                            : ""
+                    }">
+                        ${
+                            currentType === "HUMAN"
+                                ? escapeHTML(character.name || "")
+                                : currentType === "ANOMALY"
+                                    ? escapeHTML(
+                                        character.codename ||
+                                        getAnomalyDesignation(character)
+                                    )
+                                    : escapeHTML(character.name || "")
+                        }
+                    </div>
+
+                    ${
+                        currentType === "HUMAN" &&
+                        character.callsign
+                            ? `
+                                <div class="details-callsign">
+                                    ${escapeHTML(
+                                        character.callsign
+                                    )}
+                                </div>
+                            `
+                            : ""
                     }
+
                 </div>
 
                 ${
-                    currentType === "HUMAN" &&
-                    character.callsign
-                        ? `
-                            <div class="details-callsign">
-                                ${escapeHTML(
-                                    character.callsign
-                                )}
-                            </div>
-                        `
-                        : ""
+                    currentType === "HUMAN"
+                        ? createHumanDetails(character)
+                        : currentType === "ANOMALY"
+                            ? createAnomalyDetails(character)
+                            : createThaumaturgyDetails(character)
                 }
 
             </div>
 
             ${
-                currentType === "HUMAN"
-                    ? createHumanDetails(character)
-                    : createAnomalyDetails(character)
+                currentType !== "THAUMATURGY" && character.image
+                    ? `
+                        <div class="details-portrait">
+                            <img
+                                src="${escapeHTML(character.image)}"
+                                alt="${escapeHTML(
+                                    character.name ||
+                                    character.codename ||
+                                    getAnomalyDesignation(character)
+                                )}"
+                                loading="lazy"
+                            >
+                        </div>
+                    `
+                    : ""
+            }
+
+            ${
+                currentType !== "THAUMATURGY"
+                    ? createDeltaGreenPanel(character)
+                    : ""
             }
 
         </div>
+    `;
 
-        ${
-            character.image
-                ? `
-                    <div class="details-portrait">
-                        <img
-                            src="${escapeHTML(character.image)}"
-                            alt="${escapeHTML(
-                                character.name ||
-                                character.codename ||
-                                getAnomalyDesignation(character)
-                            )}"
-                            loading="lazy"
-                        >
-                    </div>
-                `
-                : ""
-        }
-
-        ${createDeltaGreenPanel(character)}
-
-    </div>
-`;
-
-return details;
-
-
+    return details;
 }
+
 
 /* =========================================================
 HUMAN DETAILS
 ========================================================= */
 
 function createHumanDetails(character) {
-return ` <div class="details-meta">
+    return `
+        <div class="details-meta">
 
+            ${createDetailsField(
+                "DEPARTMENT",
+                character.department
+            )}
 
-        ${createDetailsField(
-            "DEPARTMENT",
-            character.department
-        )}
+            ${createDetailsField(
+                "DIVISION",
+                character.division
+            )}
 
-        ${createDetailsField(
-            "DIVISION",
-            character.division
-        )}
+            ${createDetailsField(
+                "RANK",
+                character.rank
+            )}
 
-        ${createDetailsField(
-            "RANK",
-            character.rank
-        )}
+            ${createDetailsField(
+                "CLASS",
+                character.class
+            )}
 
-        ${createDetailsField(
-            "CLASS",
-            character.class
-        )}
+            ${createDetailsField(
+                "CLEARANCE",
+                character.clearance
+            )}
 
-        ${createDetailsField(
-            "CLEARANCE",
-            character.clearance
-        )}
+            ${createDetailsField(
+                "LOCATION",
+                character.location
+            )}
 
-        ${createDetailsField(
-            "LOCATION",
-            character.location
-        )}
+            ${createDetailsField(
+                "STATUS",
+                character.status
+            )}
 
-        ${createDetailsField(
-            "STATUS",
-            character.status
-        )}
-
-    </div>
-
-    ${
-        character.status &&
-        character.status !== "ACTIVE"
-            ? `
-                <div class="details-status">
-                    STATUS // ${escapeHTML(character.status)}
-                </div>
-            `
-            : ""
-    }
-
-    <div class="details-blurb">
-
-        <div class="details-blurb-label">
-            PERSONNEL SUMMARY
         </div>
 
-        <p>
-            ${escapeHTML(character.description)}
-        </p>
+        ${
+            character.status &&
+            character.status !== "ACTIVE"
+                ? `
+                    <div class="details-status">
+                        STATUS // ${escapeHTML(character.status)}
+                    </div>
+                `
+                : ""
+        }
 
-    </div>
-`;
+        <div class="details-blurb">
 
+            <div class="details-blurb-label">
+                PERSONNEL SUMMARY
+            </div>
 
+            <p>
+                ${escapeHTML(character.description || "")}
+            </p>
+
+        </div>
+    `;
 }
+
 
 /* =========================================================
 ANOMALY DETAILS
 ========================================================= */
 
 function createAnomalyDetails(character) {
-return ` <div class="details-meta">
+    return `
+        <div class="details-meta">
 
+            ${createDetailsField(
+                "OBJECT TYPE",
+                character.object_class
+            )}
 
-        ${createDetailsField(
-            "OBJECT TYPE",
-            character.object_class
-        )}
+            ${createDetailsField(
+                "CLEARANCE LEVEL",
+                character.clearance
+            )}
 
-        ${createDetailsField(
-            "CLEARANCE LEVEL",
-            character.clearance
-        )}
+            ${createDetailsField(
+                "TYPE",
+                character.anomalyType
+            )}
 
-        ${createDetailsField(
-            "TYPE",
-            character.anomalyType
-        )}
+            ${createDetailsField(
+                "LOCATION",
+                character.location
+            )}
 
-        ${createDetailsField(
-            "LOCATION",
-            character.location
-        )}
+            ${createDetailsField(
+                "CONTAINMENT%",
+                `${getContainmentPercent(
+                    character.containment
+                )}%`
+            )}
 
-        ${createDetailsField(
-            "CONTAINMENT%",
-            `${getContainmentPercent(
-                character.containment
-            )}%`
-        )}
+            ${createDetailsField(
+                "STATUS",
+                character.status
+            )}
 
-        ${createDetailsField(
-            "STATUS",
-            character.status
-        )}
-
-    </div>
-
-    ${
-        character.status &&
-        character.status !== "ACTIVE"
-            ? `
-                <div class="details-status">
-                    STATUS // ${escapeHTML(character.status)}
-                </div>
-            `
-            : ""
-    }
-
-    <div class="details-blurb">
-
-        <div class="details-blurb-label">
-            ANOMALOUS SUMMARY
         </div>
 
-        <p>
-            ${escapeHTML(character.blurb)}
-        </p>
-
-    </div>
-
-    ${
-        character.tags
-            ? `
-                <div class="details-blurb">
-
-                    <div class="details-blurb-label">
-                        TAGS
+        ${
+            character.status &&
+            character.status !== "ACTIVE"
+                ? `
+                    <div class="details-status">
+                        STATUS // ${escapeHTML(character.status)}
                     </div>
+                `
+                : ""
+        }
 
-                    <p>
-                        ${escapeHTML(character.tags)}
-                    </p>
+        <div class="details-blurb">
 
-                </div>
-            `
-            : ""
-    }
-`;
+            <div class="details-blurb-label">
+                ANOMALOUS SUMMARY
+            </div>
+
+            <p>
+                ${escapeHTML(character.blurb || "")}
+            </p>
+
+        </div>
+
+        ${
+            character.tags
+                ? `
+                    <div class="details-blurb">
+
+                        <div class="details-blurb-label">
+                            TAGS
+                        </div>
+
+                        <p>
+                            ${escapeHTML(character.tags)}
+                        </p>
+
+                    </div>
+                `
+                : ""
+        }
+    `;
+}
 
 
+/* =========================================================
+THAUMATURGY DETAILS
+========================================================= */
+
+function createThaumaturgyDetails(character) {
+    return `
+        <div class="details-meta thaumaturgy-details-meta">
+
+            ${createDetailsField(
+                "TYPE",
+                character.thaumaturgyType
+            )}
+
+            ${createDetailsField(
+                "COMPLEXITY",
+                character.complexity
+            )}
+
+            ${createDetailsField(
+                "STUDY TIME",
+                character.study_time
+            )}
+
+            ${createDetailsField(
+                "ACTIVATION",
+                character.activation
+            )}
+
+        </div>
+
+        <div class="details-blurb thaumaturgy-description">
+
+            <div class="details-blurb-label">
+                DESCRIPTION
+            </div>
+
+            <p>${escapeHTML(character.description || "")}</p>
+
+        </div>
+    `;
 }
 
 /* =========================================================
