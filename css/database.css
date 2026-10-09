@@ -765,114 +765,126 @@ opacity: 0.4;
 }
 
 /* =========================================================
-CHARACTER TABLE
+   CHARACTER TABLE
 ========================================================= */
 
 .character-table {
-width: 100%;
-border: none;
+    width: 100%;
+    border: none;
 }
 
 .table-header,
 .character-row {
-display: grid;
+    display: grid;
 }
 
 /* Column layouts */
 
 .table-header.human-layout,
 .character-row.human-layout {
-grid-template-columns:
-70px
-minmax(180px, 1.6fr)
-minmax(110px, 1fr)
-minmax(120px, 1fr)
-minmax(150px, 1.25fr)
-minmax(110px, 1fr)
-90px
-80px;
+    grid-template-columns:
+        70px
+        minmax(180px, 1.6fr)
+        minmax(110px, 1fr)
+        minmax(120px, 1fr)
+        minmax(150px, 1.25fr)
+        minmax(110px, 1fr)
+        90px
+        80px;
 }
 
 .table-header.anomaly-layout,
 .character-row.anomaly-layout {
-grid-template-columns:
-75px
-55px
-300px
-repeat(5, minmax(0, 1fr));
+    grid-template-columns:
+        75px
+        55px
+        300px
+        repeat(5, minmax(0, 1fr));
+}
+
+.table-header.thaumaturgy-layout,
+.character-row.thaumaturgy-layout {
+    grid-template-columns:
+        minmax(180px, 2fr)
+        minmax(120px, 1.2fr)
+        minmax(120px, 1.2fr)
+        minmax(120px, 1.2fr)
+        minmax(150px, 1.5fr);
+
+    width: 100%;
+    min-width: 750px;
+    box-sizing: border-box;
+    align-items: center;
 }
 
 /* Table header */
 
 .table-header {
-min-height: 38px;
-
-
-border: none;
-border-bottom: 1px solid var(--border);
-
-background: transparent;
-
-
+    min-height: 38px;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
 }
 
 .table-header .table-cell {
-font-weight: 600;
-color: var(--text-secondary);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.table-header.thaumaturgy-layout {
+    text-transform: uppercase;
 }
 
 /* Table cells */
 
 .table-cell {
-display: flex;
-align-items: center;
-
-
-padding: 0 12px;
-
-border: none;
-
-font-family: var(--font-mono);
-font-size: 9px;
-letter-spacing: 0.12em;
-
-color: var(--text-secondary);
-
-
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: var(--text-secondary);
 }
 
 .expand-cell {
-justify-content: center;
+    justify-content: center;
 }
 
 /* Character records */
 
 .character-record {
-border: none;
-border-bottom: 1px solid rgba(100, 100, 100, 0.22);
+    border: none;
+    border-bottom: 1px solid rgba(100, 100, 100, 0.22);
 }
 
 .character-row {
-min-height: 54px;
-
-
-border: none;
-
-background: transparent;
-
-cursor: pointer;
-
-transition: background 0.2s ease;
-
-
+    min-height: 54px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.2s ease;
 }
 
 .character-row .table-cell {
-color: #aaa;
+    color: #aaa;
+}
+
+/* Thaumaturgy-specific cells */
+
+.thaumaturgy-name-cell,
+.thaumaturgy-type-cell,
+.thaumaturgy-complexity-cell,
+.thaumaturgy-study-cell,
+.thaumaturgy-activation-cell {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* =========================================================
-CHARACTER ROW HOVER
+   CHARACTER ROW HOVER
 ========================================================= */
 
 .character-row .character-id,
@@ -890,14 +902,19 @@ CHARACTER ROW HOVER
 .character-row .anomaly-object-class,
 .character-row .anomaly-clearance,
 .character-row .anomaly-containment,
-.character-row .anomaly-location {
-transition:
-color 0.7s ease,
-text-shadow 0.7s ease;
+.character-row .anomaly-location,
+.character-row .thaumaturgy-name-cell,
+.character-row .thaumaturgy-type-cell,
+.character-row .thaumaturgy-complexity-cell,
+.character-row .thaumaturgy-study-cell,
+.character-row .thaumaturgy-activation-cell {
+    transition:
+        color 0.7s ease,
+        text-shadow 0.7s ease;
 }
 
 .character-row:hover {
-background: transparent;
+    background: transparent;
 }
 
 .character-row:hover .character-id,
@@ -915,120 +932,92 @@ background: transparent;
 .character-row:hover .anomaly-object-class,
 .character-row:hover .anomaly-clearance,
 .character-row:hover .anomaly-containment,
-.character-row:hover .anomaly-location {
-color: var(--red-bright) !important;
-
-
-text-shadow:
-    0 0 5px rgba(197, 43, 43, 0.45),
-    0 0 10px rgba(197, 43, 43, 0.2);
-
-
+.character-row:hover .anomaly-location,
+.character-row:hover .thaumaturgy-name-cell,
+.character-row:hover .thaumaturgy-type-cell,
+.character-row:hover .thaumaturgy-complexity-cell,
+.character-row:hover .thaumaturgy-study-cell,
+.character-row:hover .thaumaturgy-activation-cell {
+    color: var(--red-bright) !important;
+    text-shadow:
+        0 0 5px rgba(197, 43, 43, 0.45),
+        0 0 10px rgba(197, 43, 43, 0.2);
 }
 
 .character-row:hover .expand-button {
-color: var(--red-bright) !important;
-
-
-text-shadow:
-    0 0 6px rgba(197, 43, 43, 0.5);
-
-
+    color: var(--red-bright) !important;
+    text-shadow: 0 0 6px rgba(197, 43, 43, 0.5);
 }
 
 .character-row.expanded {
-background: rgba(155, 28, 28, 0.045);
+    background: rgba(155, 28, 28, 0.045);
 }
 
 /* =========================================================
-CHARACTER NAMES
+   CHARACTER NAMES
 ========================================================= */
 
 .character-id {
-font-family: var(--font-mono);
-font-size: 9px;
-color: #777;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: #777;
 }
 
 .character-name,
-.anomaly-codename {
-position: relative;
-
-
-display: flex;
-align-items: center;
-
-gap: 7px;
-
-overflow: hidden;
-
-font-family: var(--font-display);
-font-size: 15px;
-letter-spacing: 0.04em;
-
-color: #ddd;
-
-
+.anomaly-codename,
+.character-row .thaumaturgy-name-cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    overflow: hidden;
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    color: #ddd;
 }
 
 .name-primary {
-transition:
-opacity 0.35s ease,
-transform 0.35s ease;
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
 }
 
 .name-callsign {
-position: absolute;
-left: 12px;
-top: 50%;
-
-
-opacity: 0;
-
-transform:
-    translateY(-50%)
-    translateX(-5px);
-
-color: var(--red-bright);
-
-transition:
-    opacity 0.35s ease,
-    transform 0.35s ease,
-    color 0.35s ease,
-    text-shadow 0.35s ease;
-
-
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    opacity: 0;
+    transform: translateY(-50%) translateX(-5px);
+    color: var(--red-bright);
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease,
+        color 0.35s ease,
+        text-shadow 0.35s ease;
 }
 
 .character-name:has(.name-callsign):hover .name-primary {
-opacity: 0;
-transform: translateX(5px);
+    opacity: 0;
+    transform: translateX(5px);
 }
 
 .character-name:has(.name-callsign):hover .name-callsign {
-opacity: 1;
-
-
-transform:
-    translateY(-50%)
-    translateX(0);
-
-color: var(--red-bright);
-
-text-shadow:
-    0 0 5px rgba(197, 43, 43, 0.45),
-    0 0 10px rgba(197, 43, 43, 0.2);
-
-
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+    color: var(--red-bright);
+    text-shadow:
+        0 0 5px rgba(197, 43, 43, 0.45),
+        0 0 10px rgba(197, 43, 43, 0.2);
 }
 
 .character-name:has(.name-callsign):hover .status-icon {
-opacity: 0;
-transform: translateX(5px);
+    opacity: 0;
+    transform: translateX(5px);
 }
 
 /* =========================================================
-CHARACTER FIELDS
+   CHARACTER FIELDS
 ========================================================= */
 
 .character-faction,
@@ -1037,18 +1026,18 @@ CHARACTER FIELDS
 .character-rank,
 .character-clearance,
 .character-location {
-font-family: var(--font-mono);
-font-size: 9px;
-letter-spacing: 0.08em;
-color: #777;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: #777;
 }
 
 /* =========================================================
-MUTED RECORDS
+   MUTED RECORDS
 ========================================================= */
 
 .character-row.is-muted .table-cell {
-color: #333 !important;
+    color: #333 !important;
 }
 
 .character-row.is-muted:hover .character-id,
@@ -1067,14 +1056,10 @@ color: #333 !important;
 .character-row.is-muted:hover .anomaly-clearance,
 .character-row.is-muted:hover .anomaly-containment,
 .character-row.is-muted:hover .anomaly-location {
-color: var(--red-bright) !important;
-
-
-text-shadow:
-    0 0 5px rgba(197, 43, 43, 0.45),
-    0 0 10px rgba(197, 43, 43, 0.2);
-
-
+    color: var(--red-bright) !important;
+    text-shadow:
+        0 0 5px rgba(197, 43, 43, 0.45),
+        0 0 10px rgba(197, 43, 43, 0.2);
 }
 
 /* =========================================================
@@ -1350,6 +1335,44 @@ filter: grayscale(20%);
 grid-column: 1 / -1;
 width: 100%;
 }
+
+.details-value {
+    overflow-wrap: anywhere;
+    min-width: 0;
+}
+
+
+/* =========================================================
+   THAUMATURGY DETAILS
+   ========================================================= */
+
+.thaumaturgy-details-name {
+    font-size: 2rem;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.thaumaturgy-details-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.thaumaturgy-description {
+    width: 100%;
+}
+
+.thaumaturgy-description p {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+}
+
+.details-body.no-image {
+    grid-template-columns: minmax(0, 1fr);
+}
+
 
 /* =========================================================
 DELTA GREEN PANEL
@@ -1993,19 +2016,20 @@ background: #292929;
 .loader-progress span:nth-child(20) { animation-delay: 0.95s; }
 
 @keyframes loader-pulse {
-
     0%,
     100% {
-        opacity: 0.25;
+        opacity: 0.2;
     }
 
     50% {
         opacity: 1;
-        background: #7d4b4b;
-        box-shadow: 0 0 7px rgba(125, 75, 75, 0.35);
+
+        background: var(--red);
+
+        box-shadow:
+            0 0 6px rgba(155, 28, 28, 0.4);
     }
 }
-
 
 /* -----------------------------------------
    Loader status
@@ -2099,6 +2123,10 @@ RESPONSIVE — TABLET
 
 }
 
+
+
+
+
 /* =========================================================
 RESPONSIVE — MOBILE
 ========================================================= */
@@ -2180,6 +2208,7 @@ RESPONSIVE — MOBILE
 .details-grid {
     grid-template-columns: 1fr;
 }
+
 
 
 }
