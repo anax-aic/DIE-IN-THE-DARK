@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Locations of Interest | DIE IN THE DARK</title>
+
+    <link rel="icon" type="../image/png" href="images/SCPF.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/facilities.css">
+</head>
+
+<body>
+
+    <div data-include-navbar></div>
+
+    <div class="facilities-page">
+
+        <section class="facility-map-container">
+
+            <div class="facility-map">
+
+                <svg
+                    id="world-map"
+                    class="world-map"
+                    viewBox="0 0 2000 1000"
+                    preserveAspectRatio="xMidYMid meet"
+                >
+
+                    <path class="sphere"></path>
+
+                    <path class="graticule"></path>
+
+                    <g id="countries"></g>
+
+                    <path id="state-borders" class="state-borders"></path>
+
+                    <g id="borders"></g>
+
+                    <g
+                        id="facility-markers"
+                        class="facility-markers"
+                    ></g>
+
+                </svg>
+
+
+                <div
+                    class="map-loader"
+                    id="map-loader"
+                >
+
+                    <div class="map-loader-inner">
+
+                        <div class="loader-title">
+                            CONNECTING TO FACILITY NETWORK
+                        </div>
+
+                        <div
+                            class="loader-message"
+                            id="loader-message"
+                        >
+                            &gt; ESTABLISHING SCIPNET CONNECTION...
+                        </div>
+
+                        <div class="loader-progress">
+
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <div
+            class="faction-filters"
+            id="faction-filters"
+        ></div>
+        
+        <aside class="facility-panel" id="facility-panel">
+
+            <button
+                class="panel-close"
+                id="panel-close"
+                type="button"
+                aria-label="Close facility information"
+            >
+                ×
+            </button>
+
+            <div class="panel-banner" id="panel-banner"></div>
+
+            <div class="panel-content">
+
+                <div class="panel-header">
+
+                    <div class="panel-designation" id="panel-designation">—</div>
+
+                    <h2 id="panel-name">—</h2>
+
+                    <div class="panel-id" id="panel-id">
+                        —
+                    </div>
+
+                </div>
+
+                <div class="section-divider">
+                    <span class="divider-line"></span>
+                    <span class="divider-logo"></span>
+                    <span class="divider-line"></span>
+                </div>
+
+                <div
+                    class="panel-fields"
+                    id="panel-fields"
+                ></div>
+
+                <div class="facility-condition-strip">
+
+                    <section
+                        class="facility-weather"
+                        aria-label="Local weather"
+                        aria-live="polite"
+                    >
+                        <div class="panel-label">LOCAL WEATHER</div>
+                        <div class="facility-weather-content">
+                            <span
+                                class="facility-weather-icon"
+                                id="facility-weather-icon"
+                                aria-hidden="true"
+                            >
+                                --
+                            </span>
+                            <div class="facility-weather-reading">
+                                <div class="facility-weather-main">
+                                    <span id="facility-weather-temperature">--</span>
+                                    <span id="facility-weather-condition">AWAITING LOCATION</span>
+                                </div>
+                            </div>
+                            <div class="facility-weather-metrics">
+                                <div class="facility-weather-metric">
+                                    <span>HUMIDITY</span>
+                                    <strong id="facility-weather-humidity">--</strong>
+                                </div>
+                                <div class="facility-weather-metric">
+                                    <span>WIND</span>
+                                    <strong id="facility-weather-wind">--</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="facility-security">
+                        <div class="facility-security-heading">
+                            <span class="panel-label">SECURITY RATING</span>
+                            <span id="facility-security-value">UNRATED</span>
+                        </div>
+                        <div
+                            class="facility-security-meter is-unrated"
+                            id="facility-security-meter"
+                            role="meter"
+                            aria-label="Facility security rating"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                            aria-valuenow="0"
+                            aria-valuetext="Unrated"
+                        >
+                            <span class="facility-security-indicator"></span>
+                        </div>
+                        <div class="facility-security-scale">
+                            <span>0</span>
+                            <span>100</span>
+                        </div>
+                    </section>
+
+                </div>
+
+                <div class="panel-description">
+
+                    <div class="panel-label">
+                        DESCRIPTION
+                    </div>
+
+                    <p id="panel-description">
+                        —
+                    </p>
+
+                </div>
+
+                <div
+                    class="facility-record-sections"
+                    id="facility-record-sections"
+                >
+
+                    <section
+                        class="facility-record-section"
+                        data-section="personnel"
+                    >
+
+                        <button
+                            class="facility-section-toggle"
+                            type="button"
+                            aria-expanded="false"
+                        >
+                            <span class="facility-section-title">
+                                ASSIGNED PERSONNEL
+                            </span>
+
+                            <span class="facility-section-indicator">
+                                +
+                            </span>
+                        </button>
+
+                        <div class="facility-section-content">
+
+                            <div
+                                class="facility-section-empty"
+                                id="personnel-empty"
+                            >
+                                NO PERSONNEL RECORDS FOUND.
+                            </div>
+
+                            <div
+                                class="personnel-list"
+                                id="personnel-list"
+                            ></div>
+
+                        </div>
+
+                    </section>
+
+
+                    <section
+                        class="facility-record-section"
+                        data-section="anomalies"
+                    >
+
+                        <button
+                            class="facility-section-toggle"
+                            type="button"
+                            aria-expanded="false"
+                        >
+                            <span class="facility-section-title">
+                                CONTAINED ANOMALIES
+                            </span>
+
+                            <span class="facility-section-indicator">
+                                +
+                            </span>
+                        </button>
+
+                        <div class="facility-section-content">
+
+                            <div
+                                class="facility-section-empty"
+                                id="anomalies-empty"
+                            >
+                                NO ANOMALY RECORDS FOUND.
+                            </div>
+
+                            <div
+                                class="anomaly-list"
+                                id="anomaly-list"
+                            ></div>
+
+                        </div>
+
+                    </section>
+
+
+                    <section
+                        class="facility-record-section"
+                        data-section="incidents"
+                    >
+
+                        <button
+                            class="facility-section-toggle"
+                            type="button"
+                            aria-expanded="false"
+                        >
+                            <span class="facility-section-title">
+                                INCIDENTS
+                            </span>
+
+                            <span class="facility-section-indicator">
+                                +
+                            </span>
+                        </button>
+
+                        <div class="facility-section-content">
+
+                            <div
+                                class="facility-section-empty"
+                                id="incidents-empty"
+                            >
+                                NO INCIDENT RECORDS FOUND.
+                            </div>
+
+                            <div
+                                class="incident-list"
+                                id="incident-list"
+                            ></div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+
+
+        <div
+            class="panel-backdrop"
+            id="panel-backdrop"
+        ></div>
+
+    </div>
+
+
+
+    <!-- D3 -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
+    <!-- TopoJSON -->
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+
+
+    <script src="js/navbar.js"></script>
+    <!-- Facilities -->
+    <script src="js/facilities.js"></script>
+
+</body>
+
+</html>
