@@ -16,6 +16,11 @@ const ANOMALY_SHEET_URL =
 const THAUMATURGY_SHEET_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=1715857676&single=true&output=csv";
 
+const ITEMS_SHEET_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=1957733727&single=true&output=csv";
+
+const EXPENSE_ORDER = ["Incidental", "Standard", "Unusual", "Major", "Extreme"];
+
 let characters = [];
 
 const fieldIcons = {
@@ -129,6 +134,9 @@ document.getElementById("anomaly-count");
 
 const thaumaturgyCount =
     document.getElementById("thaumaturgy-count");
+
+const itemsCount =
+    document.getElementById("items-count");
 
 const tabs =
 document.querySelectorAll(".database-tab");
@@ -450,10 +458,14 @@ async function loadCharacters() {
                 type: "THAUMATURGY"
             }));            
 
+        const itemRecords =
+            await loadItemRecords();
+
         characters = [
             ...humanCharacters,
             ...anomalyCharacters,
-            ...thaumaturgyRecords
+            ...thaumaturgyRecords,
+            ...itemRecords
         ];
 
 
@@ -471,6 +483,66 @@ async function loadCharacters() {
         stopLoader();
     }
 }
+
+/* =========================================================
+ITEM DATA
+========================================================= */
+
+// Items load separately so a missing ITEMS tab never blocks the other tabs.
+async function loadItemRecords() {
+
+    try {
+
+        const response =
+            await fetch(ITEMS_SHEET_URL);
+
+        if (!response.ok) {
+            throw new Error(
+                `ITEMS sheet returned ${response.status}`
+            );
+        }
+
+        const rows =
+            parseCSV(await response.text()).map(raw =>
+                Object.fromEntries(
+                    Object.entries(raw).map(([key, value]) =>
+                        [key.trim().toLowerCase(), value]
+                    )
+                )
+            );
+
+        const records = rows
+            .filter(row => row.name && row.expense)
+            .map(row => ({
+                number: row.number || "",
+                name: row.name || "",
+                category: row.category || "",
+                price: row.price || "",
+                expense: row.expense || "",
+                restricted: row.restricted || "",
+                stats: row.stats || "",
+                notes: row.notes || "",
+
+                type: "ITEMS"
+            }));
+
+        if (!records.length) {
+            console.warn(
+                "ITEMS sheet loaded but no rows matched. Columns found:",
+                rows[0] ? Object.keys(rows[0]) : "none"
+            );
+        }
+
+        return records;
+
+    } catch (error) {
+
+        console.warn("Failed to load ITEMS:", error);
+
+        return [];
+    }
+}
+
 
 /* =========================================================
 CSV PARSER
@@ -617,6 +689,10 @@ function updateCounts() {
         character => character.type === "THAUMATURGY"
     );
 
+    const items = characters.filter(
+        character => character.type === "ITEMS"
+    );
+
     humanCount.textContent =
         String(humans.length).padStart(2, "0");
 
@@ -625,6 +701,9 @@ function updateCounts() {
 
     thaumaturgyCount.textContent =
         String(thaumaturgy.length).padStart(2, "0");
+
+    itemsCount.textContent =
+        String(items.length).padStart(2, "0");
 }
 
 /* =========================================================
@@ -670,6 +749,13 @@ if (currentType === "HUMAN") {
         { key: "complexity", label: "COMPLEXITY" }
     ];
 
+} else if (currentType === "ITEMS") {
+
+    filterFields = [
+        { key: "expense", label: "EXPENSE" },
+        { key: "category", label: "CATEGORY" }
+    ];
+
 }
 
 filterFields.forEach(field => {
@@ -691,7 +777,11 @@ filterFields.forEach(field => {
                         String(value).trim() !== ""
                 )
         )
-    ].sort();
+    ].sort(
+        field.key === "expense"
+            ? (a, b) => EXPENSE_ORDER.indexOf(a) - EXPENSE_ORDER.indexOf(b)
+            : undefined
+    );
 
     if (values.length === 0) {
         return;
@@ -878,6 +968,10 @@ return characters.filter(character => {
             character.containment,
             character.description,
             character.thaumaturgyType,
+            character.category,
+            character.expense,
+            character.stats,
+            character.notes,
         ]
             .filter(Boolean)
             .join(" ")
@@ -981,6 +1075,23 @@ function renderTableHeader() {
             <div class="table-cell thaumaturgy-activation-cell">
                 ACTIVATION
             </div>
+        `;
+
+        return;
+    }
+
+
+    if (currentType === "ITEMS") {
+
+        header.className =
+            "table-header items-layout";
+
+        header.innerHTML = `
+            <div class="table-cell items-number-cell">#</div>
+            <div class="table-cell items-name-cell">NAME</div>
+            <div class="table-cell items-category-cell">CATEGORY</div>
+            <div class="table-cell items-expense-cell">EXPENSE</div>
+            <div class="table-cell items-price-cell">PRICE</div>
         `;
 
         return;
@@ -1160,10 +1271,13 @@ if (filteredCharacters.length === 0) {
 
 noResults.classList.remove("visible");
 
+const pageSize =
+    currentType === "ITEMS" ? 20 : recordsPerPage;
+
 const totalPages =
     Math.ceil(
         filteredCharacters.length /
-        recordsPerPage
+        pageSize
     );
 
 if (currentPage > totalPages) {
@@ -1172,11 +1286,11 @@ if (currentPage > totalPages) {
 
 const start =
     (currentPage - 1) *
-    recordsPerPage;
+    pageSize;
 
 const end =
     start +
-    recordsPerPage;
+    pageSize;
 
 const pageCharacters =
     filteredCharacters.slice(start, end);
@@ -1219,6 +1333,10 @@ function createCharacterRecord(character) {
     } else if (currentType === "THAUMATURGY") {
 
         createThaumaturgyRow(row, character);
+
+    } else if (currentType === "ITEMS") {
+
+        createItemRow(row, character);
 
     }
 
@@ -1421,6 +1539,67 @@ function createThaumaturgyRow(row, character) {
 }
 
 
+/* =========================================================
+ITEM ROW
+========================================================= */
+
+function formatItemPrice(price) {
+
+    const amount = Number(price);
+
+    if (price === "" || Number.isNaN(amount)) {
+        return "";
+    }
+
+    return `$${amount.toLocaleString("en-US")}`;
+}
+
+
+function createExpenseBadge(expense) {
+
+    if (!expense) {
+        return "";
+    }
+
+    return `
+        <span class="expense-badge expense-${escapeHTML(expense.toLowerCase())}">
+            <span class="expense-triangle" aria-hidden="true"></span>
+            ${escapeHTML(expense)}
+        </span>
+    `;
+}
+
+
+function createItemRow(row, character) {
+
+    row.className =
+        "character-row items-layout";
+
+    row.innerHTML = `
+        <div class="table-cell items-number-cell">
+            ${escapeHTML(String(character.number).padStart(3, "0"))}
+        </div>
+
+        <div class="table-cell items-name-cell">
+            ${escapeHTML(character.name || "")}
+        </div>
+
+        <div class="table-cell items-category-cell">
+            ${escapeHTML(character.category || "")}
+        </div>
+
+        <div class="table-cell items-expense-cell">
+            ${createExpenseBadge(character.expense)}
+        </div>
+
+        <div class="table-cell items-price-cell">
+            ${escapeHTML(formatItemPrice(character.price))}
+        </div>
+    `;
+
+}
+
+
 
 
 
@@ -1447,7 +1626,12 @@ function createCharacterDetails(character) {
                             ? escapeHTML(
                                 getAnomalyDesignation(character)
                             )
-                            : ""
+                            : currentType === "ITEMS"
+                                ? `ITEM-${escapeHTML(
+                                    String(character.number)
+                                        .padStart(3, "0")
+                                )}`
+                                : ""
                 }
             </span>
 
@@ -1472,7 +1656,8 @@ function createCharacterDetails(character) {
                 <div class="details-identity">
 
                     <div class="details-name ${
-                        currentType === "THAUMATURGY"
+                        currentType === "THAUMATURGY" ||
+                        currentType === "ITEMS"
                             ? "thaumaturgy-details-name"
                             : ""
                     }">
@@ -1508,13 +1693,16 @@ function createCharacterDetails(character) {
                         ? createHumanDetails(character)
                         : currentType === "ANOMALY"
                             ? createAnomalyDetails(character)
-                            : createThaumaturgyDetails(character)
+                            : currentType === "ITEMS"
+                                ? createItemDetails(character)
+                                : createThaumaturgyDetails(character)
                 }
 
             </div>
 
             ${
-                currentType !== "THAUMATURGY" && character.image
+                (currentType === "HUMAN" || currentType === "ANOMALY") &&
+                character.image
                     ? `
                         <div class="details-portrait">
                             <img
@@ -1532,7 +1720,7 @@ function createCharacterDetails(character) {
             }
 
             ${
-                currentType !== "THAUMATURGY"
+                currentType === "HUMAN" || currentType === "ANOMALY"
                     ? createDeltaGreenPanel(character)
                     : ""
             }
@@ -1740,6 +1928,76 @@ function createThaumaturgyDetails(character) {
             <p>${escapeHTML(character.description || "")}</p>
 
         </div>
+    `;
+}
+
+/* =========================================================
+ITEM DETAILS
+========================================================= */
+
+// Stats are stored as 'Label: value; Label: value' in a single sheet cell.
+function parseItemStats(stats) {
+
+    return String(stats || "")
+        .split(";")
+        .map(part => part.trim())
+        .filter(Boolean)
+        .map(part => {
+            const colon = part.indexOf(":");
+
+            return colon === -1
+                ? null
+                : [
+                    part.slice(0, colon).trim(),
+                    part.slice(colon + 1).trim()
+                ];
+        })
+        .filter(Boolean);
+}
+
+
+function createItemDetails(character) {
+
+    const statFields =
+        parseItemStats(character.stats)
+            .map(([label, value]) =>
+                createDetailsField(label.toUpperCase(), value)
+            )
+            .join("");
+
+    return `
+        <div class="details-meta items-details-meta">
+
+            ${createDetailsField("CATEGORY", character.category)}
+
+            ${createDetailsField("EXPENSE", character.expense)}
+
+            ${createDetailsField(
+                "PRICE",
+                formatItemPrice(character.price)
+            )}
+
+            ${createDetailsField("RESTRICTED", character.restricted)}
+
+            ${statFields}
+
+        </div>
+
+        ${
+            character.notes
+                ? `
+                    <div class="details-blurb thaumaturgy-description">
+
+                        <div class="details-blurb-label">
+                            NOTES
+                        </div>
+
+                        <p>${escapeHTML(character.notes)}</p>
+
+                    </div>
+                `
+                : ""
+        }
     `;
 }
 

@@ -1,0 +1,371 @@
+{
+  "groups": [
+    {
+      "id": "goc-affiliates",
+      "name": "THE COALITION AND THE COUNCIL OF 108",
+      "description": "Government-based organizations grouped with the Coalition.",
+      "factionIds": ["goc", "foundation", "pisces", "m-epic", "gru-sv8"]
+    },
+    {
+      "id": "non-government",
+      "name": "NON-GOVERNMENT ORGANIZATIONS",
+      "description": "Organizations operating outside governmental structures.",
+      "factionIds": ["insurgency"]
+    },
+    {
+      "id": "cults",
+      "name": "CULTS",
+      "description": "Non-playable cults and anomalous belief systems.",
+      "factionIds": ["sarkics", "serpents-hand"]
+    },
+    {
+      "id": "defunct-organizations",
+      "name": "DEFUNCT ORGANIZATIONS",
+      "description": "Historical organizations that no longer exist.",
+      "factionIds": ["fbi-unusual-incidents-unit"],
+      "showWhenEmpty": true,
+      "emptyMessage": "No defunct organizations have been recorded yet."
+    }
+  ],
+  "factions": [
+    {
+      "id": "foundation",
+      "directoryGroup": "goc-affiliates",
+      "name": "THE UNITED STATES SPECIAL COLLECTIONS PROGRAM",
+      "mark": "SCPF",
+      "logo": "images/SCPF.png",
+      "playability": "playable",
+      "classification": "VEIL MAINTENANCE ORGANIZATION",
+      "summary": "SECURE. CONTAIN. PROTECT.",
+      "lore": "The Foundation is the central playable organization of the setting.",
+      "availability": "not-set",
+      "discordRole": "",
+      "joinRequirements": "",
+      "promotionRequirements": "",
+      "info": [
+        { "title": "Recruitment", "body": "" },
+        {
+          "title": "Class & Clearance",
+          "columns": [
+            {
+              "title": "Personnel Class",
+              "layout": "stack",
+              "body": "Assigned by proximity to potentially dangerous anomalous objects, entities, or phenomena.",
+              "items": [
+                { "badge": "A", "tone": "t0", "term": "Strategic", "text": "Essential to Foundation strategy. Never given direct access to anomalies; kept in secured areas and evacuated first in an emergency." },
+                { "badge": "B", "tone": "t1", "term": "Local Essential", "text": "Essential to local operations. Access only to anomalies cleared of mind-affecting or memetic effects. Evacuated off-site during breaches." },
+                { "badge": "C", "tone": "t2", "term": "Direct Access", "text": "Direct access to most anomalies not deemed strictly hostile. Exposure may mean quarantine and psychiatric evaluation. Non-combatants lock down or evacuate during breaches." },
+                { "badge": "D", "tone": "t3", "term": "Expendable", "text": "Used for extremely hazardous anomalies and kept apart from Class A and B. Typically violent offenders. Regular evaluation, with amnestics or termination at month's end." }
+              ]
+            },
+            {
+              "title": "Security Clearance",
+              "layout": "stack",
+              "body": "The highest level of information a person may access. Not automatic access: information is shared on a need-to-know basis at the discretion of each department's disclosure officer.",
+              "items": [
+                { "badge": "0", "tone": "t0", "term": "For Official Use Only", "text": "Non-essential personnel with no need for information on anomalies. Non-secured clerical, logistics, or janitorial staff at facilities without operational data." },
+                { "badge": "1", "tone": "t1", "term": "Confidential", "text": "Works near, but has no direct or informational access to, anomalies in containment. Clerical, logistics, or janitorial staff at containment-capable facilities." },
+                { "badge": "2", "tone": "t2", "term": "Restricted", "text": "Security and research personnel needing direct information on anomalies. Most researchers, field agents, and containment specialists." },
+                { "badge": "3", "tone": "t3", "term": "Secret", "text": "Senior personnel needing in-depth data on sources, recovery, and long-term planning. Senior researchers, project managers, security officers, response teams, and Mobile Task Force operatives." },
+                { "badge": "4", "tone": "t4", "term": "Top Secret", "text": "Senior administration with site-wide or regional intelligence and long-term strategic data. Site Directors, Security Directors, and Task Force Commanders." },
+                { "badge": "5", "tone": "t5", "term": "Thaumiel", "text": "Highest-ranking administration, with effectively unlimited access to strategic and sensitive data. Selected staff only." }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Object Classes",
+          "layout": "grid",
+          "body": "Assigned by how difficult an anomaly is to contain, not by how dangerous it is. Anything autonomous or sapient is generally at least Euclid.",
+          "items": [
+            { "icon": "images/safe.png", "tone": "t1", "term": "Object Class: Safe", "text": "Easily and safely contained, either because it is well understood or because it needs a deliberate trigger to activate. Safe does not mean harmless." },
+            { "icon": "images/euclid.png", "tone": "t3", "term": "Object Class: Euclid", "text": "Needs more resources to contain, or containment is unreliable, usually because the anomaly is poorly understood or unpredictable." },
+            { "icon": "images/keter.png", "tone": "t5", "term": "Object Class: Keter", "text": "Exceedingly difficult to contain consistently, with extensive and complex procedures. The Foundation lacks the understanding or technology to contain it well." },
+            { "icon": "images/thaumiel.png", "tone": "t0", "term": "Object Class: Thaumiel", "text": "Anomalies the Foundation uses to contain other anomalies. Their existence is classified at the highest levels." }
+          ]
+        }
+      ],
+      "offices": [
+        {
+          "name": "Administration",
+          "logo": "images/ADM.png",
+          "description": "THE OFFICE OF THE ADMINISTRATOR includes no more than a couple of dozen personnel: the Administrator himself, his assistants, the Overseers, and Site Command. With guidance from the Engine, they command the Foundation's day-to-day and long-term operations. Until the Schism, the thirteen-member Advisory Council assisted the Administrator in directing the Foundation. It has since been gutted and reformed, the remaining six Overseers each representing one of the Foundation's many offices.",
+          "availability": "not-set",
+          "discordRole": "",
+          "joinRequirements": "",
+          "promotionRequirements": "",
+          "ranks": [],
+          "divisions": [],
+          "divisionNote": "Sub-division details are not documented."
+        },
+        {
+          "name": "Security",
+          "logo": "images/SEC.png",
+          "description": "THE OFFICE OF SECURITY oversees all aspects of Foundation security: information, communications, operations, and facilities. It conducts psychological operations and disinformation campaigns, and manages the establishment and deactivation of constantly-changing security classifications. It provides communications security using experts embedded at the NSA and NRO, as well as in telecommunications companies.\n\nThe Office of Security posts plainclothes, armed security officers at Foundation facilities. Most are former field agents, long adapted to violence. They prioritize the Foundation and the Administration over any latent sympathies they might hold for personnel. As far as most are concerned, the security officers are stony-eyed killers.",
+          "availability": "not-set",
+          "discordRole": "",
+          "joinRequirements": "",
+          "promotionRequirements": "",
+          "ranks": [],
+          "divisions": [],
+          "divisionNote": "Sub-division details are not documented."
+        },
+        {
+          "name": "Operations",
+          "logo": "images/OPS.png",
+          "description": "THE OFFICE OF OPERATIONS conducts the Foundation’s core work of confronting unnatural incursions. A few dozen case officers based at Site-01 manage a couple hundred agents; each case officer runs three or four teams (called a Mobile Task Force). Case officers assign agents to operations in tightly restricted task forces, usually under the cover of counterterrorism or counterterrorism training. They also secure agents’ cover credentials and false identities, sometimes with the aid of inactive agents, called 'Friendlies', who still have the right contacts and skills.",
+          "availability": "not-set",
+          "discordRole": "",
+          "joinRequirements": "",
+          "promotionRequirements": "",
+          "ranks": [],
+          "divisions": []
+        },
+        {
+          "name": "Research",
+          "logo": "images/RES.png",
+          "description": "THE OFFICE OF RESEARCH manages projects across the Foundation's research facilities. Its specialists study anomalous phenomena, develop containment procedures, and advise on utilization programs. A handful sometimes accompany MTF DELTA-45 ROLLING THUNDER flights to recover unnatural artifacts, technology, and specimens from case officers or, more rarely, Agents in the field. Researchers are recruited from government, universities, and private technology and biotech firms: about ten senior researchers and managers work at Site-01, with roughly 100 more assigned to scattered facilities.",
+          "availability": "not-set",
+          "discordRole": "",
+          "joinRequirements": "",
+          "promotionRequirements": "",
+          "ranks": [],
+          "divisions": [],
+          "divisionNote": "Sub-division details are not documented."
+        },
+        {
+          "name": "Intelligence",
+          "logo": "images/INT.png",
+          "description": "THE OFFICE OF INTELLIGENCE gathers and evaluates information about anomalous activity, hostile organizations, and emerging threats. It connects reports from agents and outside sources into assessments that guide investigations, security measures, and operational planning.",
+          "availability": "not-set",
+          "discordRole": "",
+          "joinRequirements": "",
+          "promotionRequirements": "",
+          "ranks": [],
+          "divisions": [],
+          "divisionNote": "Sub-division details are not documented."
+        },
+        {
+          "name": "Medicine",
+          "logo": "images/MED.png",
+          "description": "THE OFFICE OF MEDICINE provides clinical care to Foundation personnel and evaluates injuries, exposure, and psychological effects associated with anomalous work. Its staff coordinate emergency response, treatment, quarantine when needed, and fitness-for-duty decisions while protecting sensitive medical information.",
+          "availability": "not-set",
+          "discordRole": "",
+          "joinRequirements": "",
+          "promotionRequirements": "",
+          "ranks": [],
+          "divisions": [],
+          "divisionNote": "Sub-division details are not documented."
+        },
+        {
+          "name": "Logistics",
+          "logo": "images/LOG.png",
+          "description": "THE OFFICE OF LOGISTICS keeps Foundation operations supplied and mobile. It manages procurement, transport, equipment, inventory, and site support so field teams and facilities can operate effectively without drawing attention or compromising the Foundation's cover.",
+          "availability": "not-set",
+          "discordRole": "",
+          "joinRequirements": "",
+          "promotionRequirements": "",
+          "ranks": [],
+          "divisions": [],
+          "divisionNote": "Sub-division details are not documented."
+        },
+        {
+          "name": "Ethics Committee",
+          "logo": "images/ETH.png",
+          "description": "THE ETHICS COMMITTEE is a small, pseudo-independent Foundation office operating under a United Nations Global Occult Coalition mandate to ensure the Foundation protects humanity from the anomalous, without becoming compromised itself. The Committee supports GOC involvement in Foundation operations and holds those operations to international law, mission necessity, and humanitarian standards. Its agents review incident reports and observe experiments, assessing whether procedures are justified, risks are controlled, and safeguards are adequate. The Committee opposes needless cruelty toward personnel or contained items, seeing it as signs of 'moral degeneracy', and unnecessary exposure to anomalous effects, including thaumaturgy.\n\nThe Committee is an oversight body, not a command authority. Since the Schism, the Committee's influence has been substantially reduced; it holds no rank above other offices or the O5 Council. It may document concerns and submit recommendations, but it cannot unilaterally decide promotions, demotions, punishments, or executions.",
+          "availability": "not-set",
+          "discordRole": "",
+          "joinRequirements": "",
+          "promotionRequirements": "",
+          "ranks": [],
+          "divisions": [],
+          "divisionNote": "Sub-division details are not documented."
+        }
+      ]
+    },
+    {
+      "id": "insurgency",
+      "directoryGroup": "non-government",
+      "name": "THE INSURGENCY",
+      "mark": "INS",
+      "logo": "images/insurgency.svg",
+      "playability": "playable",
+      "classification": "OUTLAW NETWORK",
+      "summary": "Placeholder",
+      "lore": "",
+      "availability": "not-set",
+      "discordRole": "",
+      "joinRequirements": "",
+      "promotionRequirements": "",
+      "cells": {
+        "leadership": "A",
+        "playable": ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"],
+        "nonPlayable": ["A", "Z"],
+        "regions": [
+          { "name": "REGION 01", "cells": [] },
+          { "name": "REGION 02", "cells": [] },
+          { "name": "REGION 03", "cells": [] },
+          { "name": "REGION 04", "cells": [] }
+        ],
+        "taskForces": "Not documented."
+      }
+    },
+    {
+      "id": "pisces",
+      "directoryGroup": "goc-affiliates",
+      "name": "THE PARANORMAL INTELLIGENCE SECTION FOR COUNTERINTELLIGENCE, ESPIONAGE, AND SABOTAGE",
+      "mark": "P",
+      "logo": "images/pisces.png",
+      "playability": "playable",
+      "classification": "VEIL MAINTENANCE ORGANIZATION",
+      "summary": "PISCES is the British government's official paranormal agency, now suffering a devastating multi-decade infiltration and purge by the extraterrestrial Shan.",
+      "lore": "",
+      "availability": "not-set",
+      "discordRole": "",
+      "joinRequirements": "",
+      "promotionRequirements": "",
+      "departments": [
+        { "name": "", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" }
+      ],
+      "ranks": [
+        { "name": "PISCES DIRECTOR", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES DEPUTY DIRECTOR", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES DIVISIONAL LEAD", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES EXECUTIVE OFFICER", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES SR AGENT", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES AGENT", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES TRAINEE", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" }
+      ]
+    },
+    {
+      "id": "m-epic",
+      "directoryGroup": "goc-affiliates",
+      "name": "ENVIRONMENTAL POLICY IMPACT COMMISSION (M-DIVISION)",
+      "mark": "M-EPIC",
+      "logo": "images/m-epic.png",
+      "playability": "coming-soon",
+      "classification": "VEIL MAINTENANCE ORGANIZATION",
+      "summary": "Placeholder",
+      "lore": "M-EPIC is planned as a Canadian agency. Faction structure, roles, and player access are still being developed.",
+      "availability": "not-set",
+      "discordRole": "",
+      "joinRequirements": "",
+      "promotionRequirements": ""
+    },
+    {
+      "id": "gru-p",
+      "directoryGroup": "goc-affiliates",
+      "name": "GRU DIVISION PSYCHOTRONICS",
+      "mark": "GRU",
+      "logo": "",
+      "playability": "coming-soon",
+      "classification": "VEIL MAINTENANCE ORGANIZATION",
+      "summary": "Placeholder",
+      "lore": "GRU-P is planned as a Russian agency. Faction structure, roles, and player access are still being developed.",
+      "availability": "not-set",
+      "discordRole": "",
+      "joinRequirements": "",
+      "promotionRequirements": ""
+    },
+    {
+      "id": "goc",
+      "directoryGroup": "goc-affiliates",
+      "name": "THE UNITED NATIONS GLOBAL OCCULT COALITION",
+      "mark": "GOC",
+      "logo": "images/goc.png",
+      "playability": "coming-soon",
+      "classification": "VEIL MAINTENANCE ORGANIZATION",
+      "summary": "SURVIVAL. CONCEALMENT. PROTECTION. DESTRUCTION. EDUCATION.",
+      "lore": "The Global Occult Coalition is planned as a UN proxy.",
+      "availability": "not-set",
+      "discordRole": "",
+      "joinRequirements": "",
+      "promotionRequirements": "",
+      "departmentLabel": "DEPARTMENTS & DIVISIONS",
+      "departments": [
+        {
+          "name": "High Command",
+          "description": "Coordinates, directs, and administrates the rest of the organization."
+        },
+        {
+          "name": "PHYSICS Division",
+          "description": "The GOC's action arm, equivalent to the United Nation's Peacekeeping Forces. Tasked with the observation, investigation, and capture/neutralization of Threat Entities (TEs)."
+        },
+        {
+          "name": "PSYCHE Division",
+          "description": "The GOC's diplomatic arm. Tasked with liaising with the paranormal community and maintaining peace between humanity and the occult powers."
+        },
+        {
+          "name": "PTOLEMY Division",
+          "description": "The GOC's support arm. Tasked with supporting the other arms of the GOC and maintaining the smooth operation of the organization."
+        },
+        {
+          "name": "PNEUMA Division",
+          "description": "The GOC's intelligence arm. Spearheads information-gathering and proactive initiatives against a variety of different unseen threats, either political or paranatural."
+        }
+      ]
+    },
+    {
+      "id": "sarkics",
+      "directoryGroup": "cults",
+      "name": "THE SARKIC CULTS",
+      "mark": "SC",
+      "logo": "images/sarkic.webp",
+      "playability": "non-playable",
+      "classification": "CULT OF THE UNNATURAL",
+      "summary": "Carnomancers, followers of the Grand Karcist Ion in service of the demiurge Yaldabaoth.",
+      "lore": "Sarkics are currently worldbuilding-only and are not a playable faction. Additional lore and logistical details are unfinished.",
+      "availability": "not-applicable",
+      "discordRole": "",
+      "joinRequirements": "",
+      "promotionRequirements": ""
+    },
+    {
+      "id": "serpents-hand",
+      "directoryGroup": "cults",
+      "name": "THE SERPENT'S HAND",
+      "mark": "SH",
+      "logo": "images/serpentshand.webp",
+      "playability": "non-playable",
+      "classification": "CULT OF THE UNNATURAL",
+      "summary": "A rarely-seen cult of thaumaturgists, who have dedicated their lives to the upkeep of the Library in exchange for wealths of occult knowledge.",
+      "lore": "The Serpent's Hand is currently worldbuilding-only and is not a playable faction. Additional lore and logistical details are unfinished.",
+      "availability": "not-applicable",
+      "discordRole": "",
+      "joinRequirements": "",
+      "promotionRequirements": ""
+    },
+    {
+      "id": "fbi-unusual-incidents-unit",
+      "directoryGroup": "defunct-organizations",
+      "name": "FBI UNUSUAL INCIDENTS UNIT",
+      "mark": "FBI",
+      "logo": "images/uiu.webp",
+      "playability": "non-playable",
+      "classification": "DEFUNCT ORGANIZATION",
+      "summary": "A precursor to the Foundation, the FBI Unusual Incidents Unit was a U.S. government organization tasked with investigating anomalous phenomena.",
+      "lore": "Placeholder record. Historical lore and organizational details are not yet documented.",
+      "availability": "not-applicable",
+      "discordRole": "",
+      "joinRequirements": "",
+      "promotionRequirements": ""
+    },
+    {
+      "id": "pentagram",
+      "directoryGroup": "defunct-organizations",
+      "name": "UNITED STATES PARANATURAL WARFARE COMMAND",
+      "mark": "PENTA",
+      "logo": "images/penta.png",
+      "playability": "non-playable",
+      "classification": "DEFUNCT ORGANIZATION",
+      "summary": "A precursor to the Foundation, PENTAGRAM was a top‑secret occult defense division of the U.S. Department of Defense responsible for countering anomalous threats to the United States",
+      "lore": "Placeholder record. Historical lore and organizational details are not yet documented.",
+      "availability": "not-applicable",
+      "discordRole": "",
+      "joinRequirements": "",
+      "promotionRequirements": ""
+    }
+  ]
+}

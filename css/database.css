@@ -389,6 +389,11 @@
     width: max-content;
     min-width: 100%;
     max-width: min(280px, 85vw);
+    max-height: 280px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--neutral-500) var(--neutral-850);
     padding: 5px 0;
     background: var(--neutral-850);
     border: 1px solid var(--neutral-500);
@@ -592,6 +597,18 @@
     align-items: center;
 }
 
+.table-header.items-layout,
+.character-row.items-layout {
+    grid-template-columns:
+        60px
+        minmax(240px, 3fr)
+        minmax(160px, 1.4fr)
+        minmax(120px, 1fr)
+        minmax(100px, 0.8fr);
+    min-width: 760px;
+    align-items: center;
+}
+
 /* Header structure */
 
 .table-header {
@@ -657,7 +674,8 @@
 /* Primary identifiers and names */
 
 .character-id,
-.anomaly-id {
+.anomaly-id,
+.items-number-cell {
     font-family: var(--font-mono);
     font-size: 9px;
     color: var(--neutral-250);
@@ -665,7 +683,8 @@
 
 .character-name,
 .anomaly-codename,
-.character-row .thaumaturgy-name-cell {
+.character-row .thaumaturgy-name-cell,
+.character-row .items-name-cell {
     position: relative;
     display: flex;
     align-items: center;
@@ -695,7 +714,9 @@
 .thaumaturgy-type-cell,
 .thaumaturgy-complexity-cell,
 .thaumaturgy-study-cell,
-.thaumaturgy-activation-cell {
+.thaumaturgy-activation-cell,
+.items-category-cell,
+.items-price-cell {
     min-width: 0;
     font-family: var(--font-mono);
     font-size: 9px;
@@ -1007,6 +1028,64 @@
     width: 100%;
     min-width: 0;
 }
+
+
+/* =========================================================
+   ITEMS
+========================================================= */
+
+.character-row .items-name-cell {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: var(--neutral-100);
+    text-transform: uppercase;
+    line-height: 1.3;
+}
+
+.items-price-cell {
+    color: var(--neutral-50);
+}
+
+.items-details-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.items-details-meta .details-value {
+    min-width: 0;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.expense-badge {
+    --expense: var(--neutral-150);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: inherit;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.expense-triangle {
+    width: 0;
+    height: 0;
+    border-right: 4px solid transparent;
+    border-bottom: 7px solid var(--expense);
+    border-left: 4px solid transparent;
+}
+
+.expense-incidental { --expense: #6fb36a; }
+.expense-standard { --expense: #5b9bd5; }
+.expense-unusual { --expense: #d4c04a; }
+.expense-major { --expense: #d98a3d; }
+.expense-extreme { --expense: var(--accent-bright); }
 
 .thaumaturgy-description p {
     white-space: pre-wrap;
@@ -1630,6 +1709,11 @@
     .table-header.thaumaturgy-layout,
     .character-row.thaumaturgy-layout {
         min-width: 750px;
+    }
+
+    .table-header.items-layout,
+    .character-row.items-layout {
+        min-width: 760px;
     }
 
     .details-meta {
