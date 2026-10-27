@@ -1,4 +1,4 @@
-
+﻿
 /* =========================================================
    DATABASE — BASE
 ========================================================= */
@@ -1099,8 +1099,7 @@
 ========================================================= */
 
 .delta-green-panel {
-    padding-top: 14px;
-    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.18);
+    padding-top: 4px;
 }
 
 .delta-green-panel summary {
@@ -1155,7 +1154,7 @@
 }
 
 .delta-green-content {
-    padding: 22px 0 4px;
+    padding: 14px 0 4px;
 }
 
 
@@ -2088,4 +2087,305 @@ RESPONSIVE — EXPANDED DETAILS
 }
 
 
+}
+
+
+/* =========================================================
+   SECTION LABELS (shared by summary + inventory)
+========================================================= */
+
+.details-blurb-label,
+.inv-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    color: var(--neutral-350);
+}
+
+.details-blurb-label {
+    color: var(--red-bright);
+}
+
+.details-blurb-label::after {
+    content: "";
+    flex: 1;
+    height: 0;
+    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.16);
+}
+
+/* Basic information: ticked fields */
+
+.details-field {
+    padding-left: 12px;
+    border-left: 1px solid rgba(var(--neutral-mid-rgb), 0.28);
+    transition: border-color 0.15s ease;
+}
+
+.details-field:hover {
+    border-left-color: var(--red-bright);
+}
+
+
+/* =========================================================
+   INVENTORY PANEL
+========================================================= */
+
+.inventory-panel {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding-top: 4px;
+}
+
+.inventory-panel > .details-blurb-label {
+    margin-bottom: 8px;
+}
+
+.inv-section + .inv-section {
+    margin-top: 22px;
+}
+
+.inv-section-title {
+    margin-bottom: 8px;
+    color: var(--neutral-300);
+}
+
+.inv-section-title span {
+    color: var(--neutral-400);
+}
+
+/* Thaumaturgy: bracketed tiles, click to read the description */
+
+.inv-spells {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px 22px;
+}
+
+.inv-spell {
+    position: relative;
+    min-width: 0;
+}
+
+.inv-spell::before,
+.inv-spell::after {
+    content: "";
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border: 0 solid rgba(var(--neutral-mid-rgb), 0.45);
+    pointer-events: none;
+    transition: border-color 0.15s ease;
+}
+
+.inv-spell::before {
+    top: 0;
+    left: 0;
+    border-width: 1px 0 0 1px;
+}
+
+.inv-spell::after {
+    right: 0;
+    bottom: 0;
+    border-width: 0 1px 1px 0;
+}
+
+.inv-spell:hover::before,
+.inv-spell:hover::after,
+.inv-spell[open]::before,
+.inv-spell[open]::after {
+    border-color: var(--red-bright);
+}
+
+.inv-spell summary {
+    position: relative;
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 14px;
+    padding: 12px 14px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.inv-spell summary::-webkit-details-marker {
+    display: none;
+}
+
+.inv-spell .inv-item-qty {
+    font-size: 17px;
+}
+
+.inv-spell:hover .inv-item-name,
+.inv-spell[open] .inv-item-name {
+    color: var(--neutral-25);
+}
+
+.inv-spell p {
+    margin: 0;
+    padding: 10px 14px 14px;
+    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.14);
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--neutral-200);
+    text-align: justify;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+/* Top-right and bottom-left brackets (the other two use ::before/::after) */
+
+.inv-item,
+.inv-spell {
+    --bracket: rgba(var(--neutral-mid-rgb), 0.45);
+    background:
+        linear-gradient(var(--bracket), var(--bracket)) top right / 9px 1px no-repeat,
+        linear-gradient(var(--bracket), var(--bracket)) top right / 1px 9px no-repeat,
+        linear-gradient(var(--bracket), var(--bracket)) bottom left / 9px 1px no-repeat,
+        linear-gradient(var(--bracket), var(--bracket)) bottom left / 1px 9px no-repeat;
+}
+
+.inv-item:hover,
+.inv-spell:hover,
+.inv-spell[open] {
+    --bracket: var(--red-bright);
+}
+
+/* Items: bracketed spec entries with a quantity stamp */
+
+.inv-items {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px 22px;
+}
+
+.inv-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 14px;
+    min-width: 0;
+    padding: 12px 14px;
+}
+
+.inv-item::before,
+.inv-item::after {
+    content: "";
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border: 0 solid rgba(var(--neutral-mid-rgb), 0.45);
+    transition: border-color 0.15s ease;
+}
+
+.inv-item::before {
+    top: 0;
+    left: 0;
+    border-width: 1px 0 0 1px;
+}
+
+.inv-item::after {
+    right: 0;
+    bottom: 0;
+    border-width: 0 1px 1px 0;
+}
+
+.inv-item:hover::before,
+.inv-item:hover::after {
+    border-color: var(--red-bright);
+}
+
+.inv-item-qty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding-right: 12px;
+    border-right: 1px solid rgba(var(--neutral-mid-rgb), 0.2);
+    font-family: var(--font-mono);
+    font-size: 20px;
+    line-height: 1;
+    color: var(--red-bright);
+}
+
+.inv-item-qty-label {
+    font-size: 6px;
+    letter-spacing: 0.18em;
+    color: var(--neutral-350);
+}
+
+.inv-item-body {
+    min-width: 0;
+}
+
+.inv-item-category {
+    margin-bottom: 3px;
+    font-family: var(--font-mono);
+    font-size: 7px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--neutral-350);
+}
+
+.inv-item-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--neutral-100);
+    overflow-wrap: anywhere;
+}
+
+.inv-specs {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin: 8px 0 0;
+}
+
+.inv-spec {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: var(--font-mono);
+}
+
+.inv-spec dt {
+    flex-shrink: 0;
+    font-size: 7px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--neutral-350);
+}
+
+.inv-spec::before {
+    content: "";
+    order: 1;
+    flex: 1;
+    min-width: 8px;
+    border-bottom: 1px dotted rgba(var(--neutral-mid-rgb), 0.35);
+}
+
+.inv-spec dd {
+    order: 2;
+    margin: 0;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--neutral-100);
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+    .inv-items {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .inv-items {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }

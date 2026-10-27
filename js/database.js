@@ -19,9 +19,14 @@ const THAUMATURGY_SHEET_URL =
 const ITEMS_SHEET_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=1957733727&single=true&output=csv";
 
+// Paste the published CSV url of the INVENTORY tab here.
+const INVENTORY_SHEET_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=849418287&single=true&output=csv";
+
 const EXPENSE_ORDER = ["Incidental", "Standard", "Unusual", "Major", "Extreme"];
 
 let characters = [];
+let inventoryRecords = [];
 
 const fieldIcons = {
 
@@ -461,6 +466,9 @@ async function loadCharacters() {
         const itemRecords =
             await loadItemRecords();
 
+        inventoryRecords =
+            await loadInventoryRecords();
+
         characters = [
             ...humanCharacters,
             ...anomalyCharacters,
@@ -538,6 +546,54 @@ async function loadItemRecords() {
     } catch (error) {
 
         console.warn("Failed to load ITEMS:", error);
+
+        return [];
+    }
+}
+
+
+/* =========================================================
+INVENTORY DATA
+========================================================= */
+
+// Inventory loads separately so a missing tab never blocks the database.
+async function loadInventoryRecords() {
+
+    if (!INVENTORY_SHEET_URL) {
+        return [];
+    }
+
+    try {
+
+        const response =
+            await fetch(INVENTORY_SHEET_URL);
+
+        if (!response.ok) {
+            throw new Error(
+                `INVENTORY sheet returned ${response.status}`
+            );
+        }
+
+        return parseCSV(await response.text())
+            .map(raw =>
+                Object.fromEntries(
+                    Object.entries(raw).map(([key, value]) =>
+                        [key.trim().toLowerCase(), value]
+                    )
+                )
+            )
+            .filter(row => row.id && row.name)
+            .map(row => ({
+                id: row.id,
+                date: row.date || "",
+                type: (row.type || "").trim().toLowerCase(),
+                name: row.name,
+                quantity: row.quantity || ""
+            }));
+
+    } catch (error) {
+
+        console.warn("Failed to load INVENTORY:", error);
 
         return [];
     }
@@ -1721,7 +1777,7 @@ function createCharacterDetails(character) {
 
             ${
                 currentType === "HUMAN" || currentType === "ANOMALY"
-                    ? createDeltaGreenPanel(character)
+                    ? createInventoryPanel(character) + createDeltaGreenPanel(character)
                     : ""
             }
 
@@ -1729,6 +1785,197 @@ function createCharacterDetails(character) {
     `;
 
     return details;
+}
+
+
+/* =========================================================
+INVENTORY PANEL
+========================================================= */
+
+function normalizeInventoryId(id) {
+    return String(id || "").trim().toUpperCase().replace(/^POI-/, "");
+}
+
+function getInventoryFor(character) {
+
+    const keys = new Set([
+        normalizeInventoryId(character.id),
+        normalizeInventoryId(getAnomalyDesignation(character))
+    ]);
+
+    keys.delete("");
+
+    return inventoryRecords.filter(entry =>
+        keys.has(normalizeInventoryId(entry.id))
+    );
+}
+
+function findCatalogRecord(type, name) {
+
+    const key = name.trim().toLowerCase();
+
+    return characters.find(record =>
+        record.type === type &&
+        String(record.name || "").trim().toLowerCase() === key
+    );
+}
+
+// "BURST THE EYES: 40%" -> ["BURST THE EYES", "40%"]
+function splitThaumaturgyName(name) {
+
+    const match = name.match(/^(.*?)\s*:\s*([^:]*)$/);
+
+    return match
+        ? [match[1].trim(), match[2].trim()]
+        : [name.trim(), ""];
+}
+
+function createInventoryThaumaturgy(entry) {
+
+    const [baseName, rating] =
+        splitThaumaturgyName(entry.name);
+
+    const record =
+        findCatalogRecord("THAUMATURGY", baseName);
+
+    const specs = [
+        ["STUDY", record?.studyTime],
+        ["ACTIVATION", record?.activation]
+    ].filter(([, value]) => value);
+
+    return `
+        <details class="inv-spell">
+            <summary>
+                <div class="inv-item-qty">
+                    <span class="inv-item-qty-label">SKILL</span>
+                    ${escapeHTML(rating || "—")}
+                </div>
+
+                <div class="inv-item-body">
+                    ${record?.thaumaturgyType ? `<div class="inv-item-category">${escapeHTML(record.thaumaturgyType)}</div>` : ""}
+                    <div class="inv-item-name">${escapeHTML(baseName)}</div>
+                    ${
+                        specs.length
+                            ? `<dl class="inv-specs">${specs.map(([label, value]) => `
+                                <div class="inv-spec">
+                                    <dt>${label}</dt>
+                                    <dd>${escapeHTML(value)}</dd>
+                                </div>`).join("")}</dl>`
+                            : ""
+                    }
+                </div>
+            </summary>
+            <p>${escapeHTML(record?.description || "No catalog entry found.")}</p>
+        </details>
+    `;
+}
+
+function createInventoryItem(entry) {
+
+    const record =
+        findCatalogRecord("ITEMS", entry.name);
+
+    const stats =
+        record ? parseItemStats(record.stats) : [];
+
+    const category = record?.category || "";
+
+    return `
+        <div class="inv-item">
+            <div class="inv-item-qty">
+                <span class="inv-item-qty-label">QTY</span>
+                ${escapeHTML(entry.quantity || "1")}
+            </div>
+
+            <div class="inv-item-body">
+                ${category ? `<div class="inv-item-category">${escapeHTML(category)}</div>` : ""}
+                <div class="inv-item-name">${escapeHTML(entry.name)}</div>
+                ${
+                    stats.length
+                        ? `<dl class="inv-specs">${stats.map(([label, value]) => `
+                            <div class="inv-spec">
+                                <dt>${escapeHTML(label)}</dt>
+                                <dd>${escapeHTML(value)}</dd>
+                            </div>`).join("")}</dl>`
+                        : ""
+                }
+            </div>
+        </div>
+    `;
+}
+
+function createInventoryPanel(character) {
+
+    const entries = getInventoryFor(character);
+
+    if (!entries.length) {
+        return "";
+    }
+
+    const spellType = entry =>
+        findCatalogRecord(
+            "THAUMATURGY",
+            splitThaumaturgyName(entry.name)[0]
+        )?.thaumaturgyType || "\uffff";
+
+    const spells = entries
+        .filter(entry => entry.type === "thaumaturgy")
+        .sort((a, b) =>
+            spellType(a).localeCompare(spellType(b)) ||
+            a.name.localeCompare(b.name)
+        );
+
+    const itemTotals = new Map();
+
+    entries
+        .filter(entry => entry.type !== "thaumaturgy")
+        .forEach(entry => {
+            const key = entry.name.trim().toLowerCase();
+            const amount = parseInt(entry.quantity, 10);
+            const existing = itemTotals.get(key);
+
+            // A blank quantity counts as one.
+            const add = Number.isNaN(amount) ? 1 : amount;
+
+            if (existing) {
+                existing.total += add;
+            } else {
+                itemTotals.set(key, { name: entry.name, total: add });
+            }
+        });
+
+    const itemCategory = item =>
+        findCatalogRecord("ITEMS", item.name)?.category || "\uffff";
+
+    const items = [...itemTotals.values()]
+        .map(item => ({
+            name: item.name,
+            quantity: String(item.total)
+        }))
+        .sort((a, b) =>
+            itemCategory(a).localeCompare(itemCategory(b)) ||
+            a.name.localeCompare(b.name)
+        );
+
+    return `
+        ${
+            spells.length
+                ? `<div class="inventory-panel">
+                    <div class="details-blurb-label">THAUMATURGY</div>
+                    <div class="inv-spells">${spells.map(createInventoryThaumaturgy).join("")}</div>
+                </div>`
+                : ""
+        }
+
+        ${
+            items.length
+                ? `<div class="inventory-panel">
+                    <div class="details-blurb-label">INVENTORY</div>
+                    <div class="inv-items">${items.map(createInventoryItem).join("")}</div>
+                </div>`
+                : ""
+        }
+    `;
 }
 
 
@@ -1777,16 +2024,6 @@ function createHumanDetails(character) {
 
         </div>
 
-        ${
-            character.status &&
-            character.status !== "ACTIVE"
-                ? `
-                    <div class="details-status">
-                        STATUS // ${escapeHTML(character.status)}
-                    </div>
-                `
-                : ""
-        }
 
         <div class="details-blurb">
 
@@ -1845,16 +2082,6 @@ function createAnomalyDetails(character) {
 
         </div>
 
-        ${
-            character.status &&
-            character.status !== "ACTIVE"
-                ? `
-                    <div class="details-status">
-                        STATUS // ${escapeHTML(character.status)}
-                    </div>
-                `
-                : ""
-        }
 
         <div class="details-blurb">
 
@@ -2088,8 +2315,7 @@ return ` <div class="delta-green-panel no-dice-sheet">
 
 
             <div class="delta-green-no-sheet">
-                <span class="delta-green-indicator"></span>
-                NO APPROVED DICE SHEET
+                NO DICE SHEET ON FILE
             </div>
 
         </div>
@@ -2097,13 +2323,9 @@ return ` <div class="delta-green-panel no-dice-sheet">
 }
 
 return `
-    <details class="delta-green-panel">
+    <div class="delta-green-panel">
 
-        <summary>
-            <span class="delta-green-indicator"></span>
-            SHOW DICE SHEET
-            <span class="delta-green-arrow">+</span>
-        </summary>
+        <div class="details-blurb-label">DICE SHEET</div>
 
         <div class="delta-green-content">
 
@@ -2160,7 +2382,7 @@ return `
 
         </div>
 
-    </details>
+    </div>
 `;
 
 
