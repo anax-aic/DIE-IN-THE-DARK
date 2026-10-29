@@ -37,7 +37,7 @@
       "playability": "playable",
       "classification": "VEIL MAINTENANCE ORGANIZATION",
       "summary": "SECURE. CONTAIN. PROTECT.",
-      "lore": "The Foundation is the central playable organization of the setting.",
+      "lore": "WIP",
       "availability": "not-set",
       "discordRole": "",
       "joinRequirements": "",
@@ -191,21 +191,35 @@
       "logo": "images/insurgency.svg",
       "playability": "playable",
       "classification": "OUTLAW NETWORK",
-      "summary": "Placeholder",
-      "lore": "",
+      "summary": "THE REMNANTS OF TRIAD ARROW.",
+      "lore": "The Foundation began as a top-secret, black-budget Pentagon operation defending America against paranormal threats. In the 1990s, it survives as an illegal conspiracy of dedicated individuals who beg, borrow, and steal to fund their crusade",
       "availability": "not-set",
       "discordRole": "",
       "joinRequirements": "",
       "promotionRequirements": "",
+      "info": [
+        {
+          "title": "History",
+          "body": "In August 1970, forty federal officials with TRIAD ARROW clearance met secretly in Washington, D.C. Ten were members of the Administrator's advisory council. They believed PROMETHEUS could not handle the threat posed by the unnatural and feared it would exploit anomalies instead.\n\nThe officials reconnected former clearance holders and quietly revived THE FOUNDATION as an unofficial network. Its first operation, BINGO, sent B-52s to bomb identified Sarkic villages in Indochina; the flights were made to look like navigational errors.\n\nBy Christmas 1971, the organization had no budget, headquarters, files, authorization, or oversight. Many of its members saw that independence as an advantage. The modern Insurgency inherits the same outlaw status: it has a mission, but no legal mandate or official safety net."
+        },
+        {
+          "title": "Structure",
+          "body": "The Insurgency exists to protect U.S. citizens and national security from unnatural threats. It gathers intelligence to contain or eliminate those threats, not to exploit anomalies. Its federal counterpart identifies it as GOI-002, \"THE INSURGENCY.\"\n\nThe network has no government oversight, facilities, or public offices. Agents use private properties and abandoned buildings as safe locations. Their ordinary jobs provide access and cover, not legal authority for Insurgency operations.\n\nCells are named alphabetically. A-cell handles command, control, and communications; Z-cell gathers and analyzes intelligence. Each cell leader can contact two other cell leaders and A-cell. Most agents know little about the wider network. Every agent chooses a natural-sounding codename beginning with their cell's letter."
+        },
+        {
+          "title": "Recruitment",
+          "body": "Most recruits are federal employees, especially from law enforcement, though people from other professions may also be approached. Recruitment usually begins after someone survives an anomalous event where Insurgency agents were present. Agents urge the survivor to stay quiet, then observe them and assign small, ordinary tasks.\n\nA promising candidate receives a clandestine invitation to a private meeting, with convoluted instructions intended to prevent surveillance. Agents explain the network's mission, its lack of legal authority, and the need for total secrecy. The candidate may refuse and will not be contacted again, provided they keep the meeting secret.\n\nJoining does not mean leaving a career behind. Members keep their ordinary lives until the Insurgency calls them to a specific operation."
+        }
+      ],
       "cells": {
         "leadership": "A",
         "playable": ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"],
         "nonPlayable": ["A", "Z"],
         "regions": [
-          { "name": "REGION 01", "cells": [] },
-          { "name": "REGION 02", "cells": [] },
-          { "name": "REGION 03", "cells": [] },
-          { "name": "REGION 04", "cells": [] }
+          { "name": "NORTHEAST", "cells": ["B", "C", "D", "E", "F", "G"] },
+          { "name": "MIDWEST", "cells": ["H", "I", "J", "K", "L", "M"] },
+          { "name": "SOUTH", "cells": ["N", "O", "P", "Q", "R", "S"] },
+          { "name": "WEST", "cells": ["T", "U", "V", "W", "X", "Y"] }
         ],
         "taskForces": "Not documented."
       }
@@ -219,24 +233,29 @@
       "playability": "playable",
       "classification": "VEIL MAINTENANCE ORGANIZATION",
       "summary": "PISCES is the British government's official paranormal agency, now suffering a devastating multi-decade infiltration and purge by the extraterrestrial Shan.",
-      "lore": "",
+      "lore": "PISCES is Britain's official service for paranormal threats, embedded within the national security apparatus. Its officers seek to neutralize threats or, when possible, capture and study them. Decades of Shan infiltration have compromised the service from within; colleagues, intelligence, and orders may not be what they seem.",
       "availability": "not-set",
       "discordRole": "",
       "joinRequirements": "",
       "promotionRequirements": "",
-      "departments": [
-        { "name": "", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
-        { "name": "", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
-        { "name": "", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" }
+      "info": [
+        {
+          "title": "History",
+          "body": "PISCES (the Paranormal Intelligence Section for Counterintelligence, Espionage and Sabotage) is Britain's secret paranormal intelligence organization. Its origins lie in MI-13, a prewar intelligence unit investigating psychic phenomena. On June 26, 1940, Winston Churchill reorganized MI-13 into PISCES as Britain prepared for a potential German invasion. Drawing personnel and resources from MI5, MI6, and other government agencies, PISCES was tasked with investigating supernatural threats and exploiting anomalous phenomena for the war effort. From its inception, PISCES operated under a dual mandate: protect Britain from the unnatural while determining whether it could be turned into a weapon.\n\nDuring World War II, PISCES investigated Nazi occult organizations such as the Karotechia, while developing its own expertise in paranormal intelligence and psychic phenomena. It established ties with its American counterpart, the PENTAGRAM, which eventually became the Foundation. Although the organizations cooperated against common enemies, PISCES was particularly interested in weaponizing psychic abilities and exploiting occult knowledge. After the war, it survived as an officially sanctioned component of British intelligence. Throughout the Cold War, PISCES continued investigating paranormal threats, recruiting psychically gifted individuals known as 'Talents', and maintaining its occult archives.\n\nIts operations became increasingly ruthless; in 1968, PISCES assaulted a cult located in the village of Goatswood. In the process, they encountered the Shan (logged in the Deepwell as UAP-0099 \"The Insects from Shaggai\") - extraterrestrial insectoids that burrow into the human brain to control their hosts. Infested agents returning from Goatswood gave them access to British intelligence networks and government institutions, turning PISCES into a potential instrument of their influence."
+        },
+        {
+          "title": "Recruitment",
+          "body": "PISCES recruits from the institutions that give it reach: intelligence, law enforcement, the armed forces, and the civil service. Selection favors discretion, sound judgment, useful specialist skills, and the ability to keep working under pressure.\n\nRecruits may enter through ordinary government postings before learning the full purpose of their work. Access is need-to-know, and sensitive operations are compartmentalized. Those who get too close may find themselves shipped off to Magonia for interrogation, or worse - to become a host."
+        }
       ],
       "ranks": [
-        { "name": "PISCES DIRECTOR", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
-        { "name": "PISCES DEPUTY DIRECTOR", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
-        { "name": "PISCES DIVISIONAL LEAD", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
-        { "name": "PISCES EXECUTIVE OFFICER", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
-        { "name": "PISCES SR AGENT", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
-        { "name": "PISCES AGENT", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
-        { "name": "PISCES TRAINEE", "availability": "not-set", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" }
+        { "name": "PISCES DIRECTOR", "availability": "NON-PLAYABLE", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES DEPUTY DIRECTOR", "availability": "CLOSED", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES DIVISIONAL LEAD", "availability": "PROMOTION", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES EXECUTIVE OFFICER", "availability": "PROMOTION", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES SR AGENT", "availability": "PROMOTION", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES AGENT", "availability": "OPEN", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" },
+        { "name": "PISCES TRAINEE", "availability": "OPEN", "discordRole": "", "joinRequirements": "", "promotionRequirements": "" }
       ]
     },
     {
@@ -248,7 +267,7 @@
       "playability": "coming-soon",
       "classification": "VEIL MAINTENANCE ORGANIZATION",
       "summary": "Placeholder",
-      "lore": "M-EPIC is planned as a Canadian agency. Faction structure, roles, and player access are still being developed.",
+      "lore": "The Canadians",
       "availability": "not-set",
       "discordRole": "",
       "joinRequirements": "",
@@ -263,7 +282,7 @@
       "playability": "coming-soon",
       "classification": "VEIL MAINTENANCE ORGANIZATION",
       "summary": "Placeholder",
-      "lore": "GRU-P is planned as a Russian agency. Faction structure, roles, and player access are still being developed.",
+      "lore": "The Russians",
       "availability": "not-set",
       "discordRole": "",
       "joinRequirements": "",
@@ -278,7 +297,7 @@
       "playability": "coming-soon",
       "classification": "VEIL MAINTENANCE ORGANIZATION",
       "summary": "SURVIVAL. CONCEALMENT. PROTECTION. DESTRUCTION. EDUCATION.",
-      "lore": "The Global Occult Coalition is planned as a UN proxy.",
+      "lore": "The UN's proxy into anomalous affairs. Composed of representative organizations from its member states.",
       "availability": "not-set",
       "discordRole": "",
       "joinRequirements": "",
@@ -316,7 +335,7 @@
       "playability": "non-playable",
       "classification": "CULT OF THE UNNATURAL",
       "summary": "Carnomancers, followers of the Grand Karcist Ion in service of the demiurge Yaldabaoth.",
-      "lore": "Sarkics are currently worldbuilding-only and are not a playable faction. Additional lore and logistical details are unfinished.",
+      "lore": "Placeholder",
       "availability": "not-applicable",
       "discordRole": "",
       "joinRequirements": "",
@@ -331,7 +350,7 @@
       "playability": "non-playable",
       "classification": "CULT OF THE UNNATURAL",
       "summary": "A rarely-seen cult of thaumaturgists, who have dedicated their lives to the upkeep of the Library in exchange for wealths of occult knowledge.",
-      "lore": "The Serpent's Hand is currently worldbuilding-only and is not a playable faction. Additional lore and logistical details are unfinished.",
+      "lore": "Placeholder",
       "availability": "not-applicable",
       "discordRole": "",
       "joinRequirements": "",
@@ -346,7 +365,7 @@
       "playability": "non-playable",
       "classification": "DEFUNCT ORGANIZATION",
       "summary": "A precursor to the Foundation, the FBI Unusual Incidents Unit was a U.S. government organization tasked with investigating anomalous phenomena.",
-      "lore": "Placeholder record. Historical lore and organizational details are not yet documented.",
+      "lore": "Placeholder",
       "availability": "not-applicable",
       "discordRole": "",
       "joinRequirements": "",
@@ -361,7 +380,7 @@
       "playability": "non-playable",
       "classification": "DEFUNCT ORGANIZATION",
       "summary": "A precursor to the Foundation, PENTAGRAM was a top‑secret occult defense division of the U.S. Department of Defense responsible for countering anomalous threats to the United States",
-      "lore": "Placeholder record. Historical lore and organizational details are not yet documented.",
+      "lore": "Placeholder",
       "availability": "not-applicable",
       "discordRole": "",
       "joinRequirements": "",

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#070707">
+    <title>Factions | DIE IN THE DARK</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/factions.css">
+</head>
+<body>
+    <div data-include-navbar></div>
+
+    <main class="factions-page">
+        <header class="factions-hero">
+            <div class="factions-hero-copy">
+                <div class="factions-eyebrow">
+                    <span class="factions-eyebrow-line"></span>
+                    WORLD BUILDING // ORGANIZATIONAL INDEX
+                    <span class="factions-eyebrow-line"></span>
+                </div>
+                <h1>FACTIONS</h1>
+                <p>Organizations, chains of command, and the roles available to players.</p>
+            </div>
+
+            <div class="faction-counts" aria-label="Faction counts">
+                <div class="faction-count">
+                    <strong id="count-playable">00</strong>
+                    <span>PLAYABLE</span>
+                </div>
+                <div class="faction-count">
+                    <strong id="count-coming-soon">00</strong>
+                    <span>COMING SOON</span>
+                </div>
+                <div class="faction-count">
+                    <strong id="count-non-playable">00</strong>
+                    <span>NON-PLAYABLE</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="faction-tools" aria-label="Faction directory controls">
+            <label class="faction-search">
+                <span>SEARCH FACTIONS</span>
+                <span class="faction-search-input">
+                    <span aria-hidden="true">⌕</span>
+                    <input id="faction-search" type="search" placeholder="Name, office, cell, or rank" autocomplete="off">
+                </span>
+            </label>
+
+            <div class="faction-filter-group" role="group" aria-label="Filter by playability">
+                <button type="button" class="faction-filter is-active" data-filter="all" aria-pressed="true">ALL</button>
+                <button type="button" class="faction-filter" data-filter="playable" aria-pressed="false">PLAYABLE</button>
+                <button type="button" class="faction-filter" data-filter="coming-soon" aria-pressed="false">COMING SOON</button>
+                <button type="button" class="faction-filter" data-filter="non-playable" aria-pressed="false">NON-PLAYABLE</button>
+            </div>
+        </section>
+
+        <div class="faction-results-bar">
+            <span id="faction-results" role="status">LOADING FACTION INDEX</span>
+            <span class="faction-results-note">SELECT A RECORD TO VIEW STRUCTURE &amp; ACCESS</span>
+        </div>
+
+        <section id="faction-list" class="faction-list" aria-label="Factions"></section>
+
+        <div id="faction-empty" class="faction-empty" hidden>
+            <span class="faction-empty-mark" aria-hidden="true">//</span>
+            <strong>NO MATCHING FACTIONS</strong>
+            <span>Adjust the search or playability filter.</span>
+        </div>
+
+        <footer class="factions-footer">
+            <span>FACTION INDEX // REVISION CONTROLLED</span>
+            <span class="factions-footer-line"></span>
+            <span>ACCESS &amp; PROMOTION DETAILS MAY CHANGE</span>
+        </footer>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/factions.js"></script>
+</body>
+</html>

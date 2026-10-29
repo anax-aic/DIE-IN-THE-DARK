@@ -3,6 +3,8 @@ const FACTION_STRUCTURE_CSV_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=389952926&single=true&output=csv";
 const HUMAN_ROSTER_CSV_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=0&single=true&output=csv";
+const US_STATES_DATA_URL =
+    "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
 const factionList = document.getElementById("faction-list");
 const factionSearch = document.getElementById("faction-search");
@@ -16,6 +18,37 @@ let factionStructureRows = [];
 let humanRoster = [];
 let humanRosterLoaded = false;
 let activeFactionFilter = "all";
+let usStatesData = null;
+
+const CENSUS_REGION_BY_STATE = {
+    "01": "south", "02": "west", "04": "west", "05": "south",
+    "06": "west", "08": "west", "09": "northeast", "10": "south",
+    "11": "south", "12": "south", "13": "south", "15": "west",
+    "16": "west", "17": "midwest", "18": "midwest", "19": "midwest",
+    "20": "midwest", "21": "south", "22": "south", "23": "northeast",
+    "24": "south", "25": "northeast", "26": "midwest", "27": "midwest",
+    "28": "south", "29": "midwest", "30": "west", "31": "midwest",
+    "32": "west", "33": "northeast", "34": "northeast", "35": "west",
+    "36": "northeast", "37": "south", "38": "midwest", "39": "midwest",
+    "40": "south", "41": "west", "42": "northeast", "44": "northeast",
+    "45": "south", "46": "midwest", "47": "south", "48": "south",
+    "49": "west", "50": "northeast", "51": "south", "53": "west",
+    "54": "south", "55": "midwest", "56": "west"
+};
+
+const CENSUS_REGION_NAMES = {
+    northeast: "NORTHEAST",
+    midwest: "MIDWEST",
+    south: "SOUTH",
+    west: "WEST"
+};
+
+const CENSUS_REGION_OFFSETS = {
+    northeast: [14, -7],
+    midwest: [0, -12],
+    south: [0, 14],
+    west: [-14, 0]
+};
 
 const PLAYABILITY_LABELS = {
     playable: "PLAYABLE",
@@ -31,7 +64,7 @@ async function loadFactions() {
 
     try {
 
-        const [response, structureResponse, humanResponse] = await Promise.all([
+        const [response, structureResponse, humanResponse, statesResponse] = await Promise.all([
             fetch(FACTIONS_DATA_URL),
             fetch(FACTION_STRUCTURE_CSV_URL).catch(error => {
                 console.warn("Could not load faction structure sheet:", error);
@@ -40,8 +73,14 @@ async function loadFactions() {
             fetch(HUMAN_ROSTER_CSV_URL).catch(error => {
                 console.warn("Could not load human roster for unit limits:", error);
                 return null;
+            }),
+            d3.json(US_STATES_DATA_URL).catch(error => {
+                console.warn("Could not load U.S. state boundaries:", error);
+                return null;
             })
         ]);
+
+        usStatesData = statesResponse;
 
         if (!response.ok) {
             throw new Error(`Faction data returned ${response.status}`);
@@ -376,6 +415,96 @@ function renderFactions() {
     factionResults.textContent =
         `${String(matches.length).padStart(2, "0")} RECORDS // ${PLAYABILITY_LABELS[activeFactionFilter] || "ALL FACTIONS"}`;
 
+    renderInsurgencyMap();
+
+}
+
+
+function renderInsurgencyMap() {
+
+    if (!usStatesData || !window.d3 || !window.topojson) return;
+
+    const mapSvg = d3.select("#insurgency-us-map-svg");
+    if (mapSvg.empty()) return;
+
+    const states = topojson.feature(
+        usStatesData,
+        usStatesData.objects.states
+    ).features;
+    const projection = d3.geoAlbersUsa().fitExtent(
+        [[26, 24], [614, 336]],
+        { type: "FeatureCollection", features: states }
+    );
+    const path = d3.geoPath(projection);
+
+    mapSvg.select(".insurgency-map-states")
+        .selectAll("path")
+        .data(states, state => state.id)
+        .join("path")
+        .attr("class", state => {
+            const region = CENSUS_REGION_BY_STATE[String(state.id).padStart(2, "0")];
+            return `insurgency-map-state${region ? ` is-${region}` : ""}`;
+        })
+        .attr("d", path)
+        .attr("transform", state => {
+            const region = CENSUS_REGION_BY_STATE[String(state.id).padStart(2, "0")];
+            const [offsetX, offsetY] = CENSUS_REGION_OFFSETS[region] || [0, 0];
+            return `translate(${offsetX},${offsetY})`;
+        })
+        .attr("aria-label", state => state.properties.name || "U.S. state")
+        .on("pointerenter", (event, state) => {
+            setActiveInsurgencyRegion(
+                CENSUS_REGION_BY_STATE[String(state.id).padStart(2, "0")],
+                true
+            );
+        })
+        .on("pointerleave", (event, state) => {
+            setActiveInsurgencyRegion(
+                CENSUS_REGION_BY_STATE[String(state.id).padStart(2, "0")],
+                false
+            );
+        });
+
+    const regionFeatures = Object.keys(CENSUS_REGION_NAMES).map(region => ({
+        region,
+        name: CENSUS_REGION_NAMES[region],
+        states: states.filter(state =>
+            CENSUS_REGION_BY_STATE[String(state.id).padStart(2, "0")] === region &&
+            !(region === "west" && ["02", "15"].includes(String(state.id).padStart(2, "0")))
+        )
+    }));
+
+    mapSvg.select(".insurgency-map-labels")
+        .selectAll("text")
+        .data(regionFeatures, region => region.region)
+        .join("text")
+        .attr("class", region => `insurgency-map-label is-${region.region}`)
+        .attr("transform", region => {
+            const geometry = {
+                type: "FeatureCollection",
+                features: region.states
+            };
+            const centroid = projection(d3.geoCentroid(geometry));
+            if (!centroid) return null;
+            const [offsetX, offsetY] = CENSUS_REGION_OFFSETS[region.region];
+            return `translate(${centroid[0] + offsetX},${centroid[1] + offsetY})`;
+        })
+        .text(region => region.name);
+
+}
+
+
+function setActiveInsurgencyRegion(region, isActive) {
+
+    if (!region) return;
+
+    const activeClass = "is-region-active";
+    const states = d3.selectAll(`.insurgency-map-state.is-${region}`);
+    const labels = d3.selectAll(`.insurgency-map-label.is-${region}`);
+
+    states.classed(activeClass, isActive);
+    labels.classed(activeClass, isActive);
+
 }
 
 
@@ -481,14 +610,17 @@ function renderInfoContent(section) {
 }
 
 
-function renderSectionDivider(record) {
+function renderSectionDivider(record, modifierClass = "") {
 
     const style = record.id !== "foundation" && record.logo
         ? ` style="--divider-logo: ${escapeFactionText(`url(${JSON.stringify(new URL(record.logo, document.baseURI).href)})`)}"`
         : "";
+    const className = modifierClass
+        ? ` ${escapeFactionText(modifierClass)}`
+        : "";
 
     return `
-        <div class="section-divider" aria-hidden="true"${style}>
+        <div class="section-divider${className}" aria-hidden="true"${style}>
             <span class="divider-line"></span>
             <span class="divider-logo"></span>
             <span class="divider-line"></span>
@@ -539,7 +671,7 @@ function renderFactionStructure(record) {
         return `${renderOffices(record.offices, structureRows)}${rootStructure}`;
     }
 
-    if (record.cells) return `${renderCells(record.cells)}${rootStructure}`;
+    if (record.cells) return `${renderCells(record.cells, record)}${rootStructure}`;
     if (record.departments || record.ranks) {
         return `${renderDepartmentsAndRanks(record)}${rootStructure}`;
     }
@@ -749,6 +881,7 @@ function renderOrganizationUnit(unit, units, ancestors = new Set()) {
 
 function renderRootOrganizationUnits(record, units) {
 
+    const isInsurgency = record.id === "insurgency";
     const factionReferences = [record.id, record.name]
         .map(normalizeStructureReference)
         .filter(Boolean);
@@ -761,13 +894,14 @@ function renderRootOrganizationUnits(record, units) {
     if (!rootUnits.length) return "";
 
     return `
-        <section class="faction-structure faction-sheet-structure">
+        ${isInsurgency ? renderSectionDivider(record, "insurgency-unit-divider") : ""}
+        <section class="faction-structure faction-sheet-structure${isInsurgency ? " faction-sheet-structure--insurgency" : ""}">
             <div class="faction-structure-heading">
                 <div>
-                    <div class="faction-section-label">ORGANIZATIONAL STRUCTURE</div>
-                    <h3>Published unit directory</h3>
+                    <div class="faction-section-label">${isInsurgency ? "DIVISION" : "ORGANIZATIONAL STRUCTURE"}</div>
+                    ${isInsurgency ? "" : "<h3>Published unit directory</h3>"}
                 </div>
-                <span class="faction-structure-count">${String(rootUnits.length).padStart(2, "0")}</span>
+                ${isInsurgency ? "" : `<span class="faction-structure-count">${String(rootUnits.length).padStart(2, "0")}</span>`}
             </div>
             <div class="faction-sheet-units">
                 ${rootUnits.map(unit => renderOrganizationUnit(unit, units)).join("")}
@@ -898,14 +1032,13 @@ function renderOffice(office, index, structureRows = []) {
 }
 
 
-function renderCells(cellStructure) {
+function renderCells(cellStructure, record) {
 
     const playable = new Set(cellStructure.playable || []);
     const nonPlayable = new Set(cellStructure.nonPlayable || []);
     const leadership = cellStructure.leadership;
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-    const cells = letters.map(letter => {
+    const renderCellBadge = letter => {
         const isPlayable = playable.has(letter);
         const isLeadership = letter === leadership;
         const status = isLeadership
@@ -917,41 +1050,40 @@ function renderCells(cellStructure) {
                     : "STATUS NOT SET";
 
         return `
-            <span class="insurgency-cell ${isPlayable ? "is-playable" : "is-unplayable"} ${isLeadership ? "is-leadership" : ""}"
+            <span class="insurgency-cell-badge ${isPlayable ? "is-playable" : "is-unplayable"} ${isLeadership ? "is-leadership" : ""}"
                   title="${escapeFactionText(`${letter}-CELL // ${status}`)}">
-                <span>${letter}</span>
+                                ${escapeFactionText(letter)}
             </span>
         `;
-    }).join("");
+    };
+
+    const highCommand = [leadership, ...(cellStructure.nonPlayable || []).filter(cell => cell !== leadership)]
+        .map(renderCellBadge)
+        .join("");
 
     const regions = (cellStructure.regions || []).map((region, index) => `
-        <div class="insurgency-region">
-            <span class="faction-unit-index">${String(index + 1).padStart(2, "0")}</span>
+        <div class="insurgency-region insurgency-region--${index + 1}">
             <strong>${escapeFactionText(region.name || `REGION ${String(index + 1).padStart(2, "0")}`)}</strong>
-            <span>${region.cells?.length ? `${region.cells.length} CELLS ASSIGNED` : "CELL ASSIGNMENTS NOT SET"}</span>
+            <div class="insurgency-region-cells">
+                ${(region.cells || []).map(renderCellBadge).join("") || "CELL ASSIGNMENTS NOT SET"}
+            </div>
         </div>
     `).join("");
 
     return `
         <section class="faction-structure">
-            <div class="faction-structure-heading">
-                <div>
-                    <div class="faction-section-label">CELL NETWORK</div>
-                </div>
-                <span class="faction-structure-count">26</span>
+            <div class="faction-section-label faction-regions-label">U.S. CENSUS REGIONS</div>
+            <div class="insurgency-us-map">
+                <svg id="insurgency-us-map-svg" viewBox="0 0 640 360" role="img" aria-label="United States divided into the four Census regions">
+                    <g class="insurgency-map-states"></g>
+                    <g class="insurgency-map-labels" aria-hidden="true"></g>
+                </svg>
             </div>
-
-            <div class="insurgency-cells" aria-label="Insurgency cells A through Z">${cells}</div>
-
-            <div class="insurgency-legend">
-                <span><i class="is-playable"></i> PLAYABLE</span>
-                <span><i class="is-unplayable"></i> NOT PLAYABLE</span>
-                <span>A-CELL // LEADERSHIP</span>
+            <div class="insurgency-high-command">
+                <strong>HIGH COMMAND</strong>
+                <div class="insurgency-command-cells">${highCommand}</div>
             </div>
-
-            <div class="faction-section-label faction-regions-label">FOUR U.S. REGIONS</div>
             <div class="insurgency-regions">${regions}</div>
-            <p class="faction-structure-note">Task forces and Discord cell roles: ${displayValue(cellStructure.taskForces)}</p>
         </section>
     `;
 
@@ -1032,7 +1164,7 @@ function renderDepartmentsAndRanks(record) {
                 <div class="faction-structure-heading faction-rank-heading">
                     <div>
                         <div class="faction-section-label">RANK LADDER</div>
-                        <h3>Highest to entry rank</h3>
+                        ${record.id === "pisces" ? "" : "<h3>Highest to entry rank</h3>"}
                     </div>
                     <span class="faction-structure-count">${String(ranks.length).padStart(2, "0")}</span>
                 </div>

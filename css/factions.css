@@ -1,0 +1,1981 @@
+.factions-page {
+    width: min(1240px, 92vw);
+    margin: 0 auto;
+    padding: 96px 0 48px;
+}
+
+.factions-hero {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    padding: 70px 20px 30px;
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+}
+
+.factions-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    z-index: -1;
+    width: 100vw;
+    transform: translateX(-50%);
+    background: radial-gradient(
+        ellipse 78% 95% at center,
+        color-mix(in srgb, var(--accent-bright) 8%, transparent) 0%,
+        color-mix(in srgb, var(--accent-bright) 3%, transparent) 24%,
+        transparent 52%
+    );
+    pointer-events: none;
+}
+
+.factions-hero-copy {
+    width: 100%;
+    text-align: center;
+}
+
+.factions-eyebrow,
+.faction-section-label,
+.faction-summary-meta,
+.faction-search > span:first-child,
+.faction-results-bar,
+.factions-footer {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.factions-eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 22px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+}
+
+.factions-eyebrow-line {
+    width: 55px;
+    height: 1px;
+    background: var(--red-bright);
+}
+
+.factions-hero h1 {
+    color: var(--red-bright);
+    font-family: var(--font-condensed);
+    font-size: 88px;
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 24px rgba(var(--red-glow-rgb), 0.2);
+    text-transform: uppercase;
+}
+
+.factions-hero-copy > p:last-child {
+    max-width: 700px;
+    margin: 28px auto 0;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.7;
+    letter-spacing: 0.12em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.faction-counts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: min(660px, 100%);
+    min-height: 62px;
+    gap: 22px;
+}
+
+.faction-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 0;
+    padding: 0 8px;
+}
+
+.faction-count strong {
+    color: var(--red-bright);
+    font-family: var(--font-condensed);
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+
+#count-playable {
+    color: var(--security-safe);
+}
+
+
+#count-coming-soon {
+    color: var(--text-secondary);
+}
+
+
+#count-non-playable {
+    color: var(--status-level-high);
+}
+
+.faction-count span {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 7px;
+    line-height: 1.4;
+}
+
+.faction-tools {
+    display: grid;
+    grid-template-columns: minmax(210px, 0.7fr) minmax(0, 1.3fr);
+    align-items: end;
+    gap: 24px;
+    padding: 23px 0 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.faction-search {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.faction-search-input {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    padding: 0 0 8px;
+    border-bottom: 1px solid var(--neutral-600);
+    color: var(--neutral-300);
+    font-family: var(--font-mono);
+    font-size: 18px;
+}
+
+.faction-search-input:focus-within {
+    border-color: var(--red-bright);
+}
+
+.faction-search input {
+    width: 100%;
+    min-width: 0;
+    padding: 3px 0;
+    border: 0;
+    outline: 0;
+    appearance: none;
+    background: transparent;
+    color: var(--text);
+    color-scheme: dark;
+    font-size: 10px;
+}
+
+.faction-search input::placeholder {
+    color: var(--neutral-400);
+}
+
+.faction-filter-group {
+    position: relative;
+    isolation: isolate;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 3px;
+}
+
+.faction-filter {
+    position: relative;
+    min-height: 31px;
+    padding: 0 10px;
+    border: 0;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    cursor: pointer;
+    transition: color 0.18s ease;
+}
+
+.faction-filter:hover {
+    color: var(--white);
+}
+
+.faction-filter.is-active {
+    color: var(--red-bright);
+    pointer-events: none;
+}
+
+.faction-filter.is-active::after {
+    width: 100%;
+    position: absolute;
+    right: 10px;
+    bottom: 1px;
+    left: 10px;
+    height: 2px;
+    background: var(--red-bright);
+}
+
+.faction-results-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0 10px;
+}
+
+.faction-results-note {
+    color: var(--neutral-400);
+    text-align: right;
+}
+
+.faction-list {
+    background: var(--black);
+}
+
+
+.faction-directory-group + .faction-directory-group {
+    margin-top: 34px;
+}
+
+
+.faction-group-heading {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 12px;
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+}
+
+
+.faction-group-heading-copy {
+    grid-column: 1 / 3;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+
+.faction-group-marker {
+    align-self: center;
+    width: 0;
+    height: 0;
+    flex: 0 0 auto;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 7px solid var(--red-bright);
+    transform: translateY(1px);
+}
+
+
+.faction-group-heading h2 {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--text-secondary);
+    font-family: var(--font-condensed);
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+
+.faction-group-heading p {
+    min-width: 0;
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 11px;
+    line-height: 1.45;
+    text-align: justify;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.faction-group-count {
+    grid-column: 3;
+    color: var(--neutral-500);
+    font-family: var(--font-condensed);
+    font-size: 22px;
+    line-height: 1;
+}
+
+
+.faction-group-records {
+    border-top: 0;
+}
+
+
+.faction-group-empty {
+    margin: 0;
+    padding: 17px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.faction-record {
+    min-width: 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.faction-disclosure > summary,
+.faction-unit > summary,
+.faction-rank-row details > summary {
+    list-style: none;
+}
+
+.faction-disclosure > summary::-webkit-details-marker,
+.faction-unit > summary::-webkit-details-marker,
+.faction-rank-row details > summary::-webkit-details-marker {
+    display: none;
+}
+
+.faction-summary {
+    position: relative;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) 18px;
+    align-items: center;
+    gap: 18px;
+    min-height: 102px;
+    padding: 18px 14px;
+    cursor: pointer;
+    background: transparent;
+    transition: background-color 0.24s ease;
+}
+
+.faction-mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 70px;
+    height: 70px;
+    overflow: hidden;
+    color: var(--text-secondary);
+}
+
+.faction-mark img {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.28s ease;
+}
+
+.faction-monogram {
+    max-width: 100%;
+    padding: 3px;
+    color: var(--neutral-100);
+    font-family: var(--font-condensed);
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.faction-record--foundation .faction-mark {
+    border: 0;
+    background: transparent;
+}
+
+.faction-summary-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.faction-summary-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    font-size: 7px;
+}
+
+
+.faction-summary-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-width: 0;
+}
+
+
+.faction-summary-title .faction-status {
+    box-sizing: border-box;
+    min-height: 16px;
+    padding: 0 7px;
+    font-size: 7px;
+    line-height: 1;
+}
+
+.faction-index {
+    color: var(--red-bright);
+}
+
+.faction-name {
+    color: var(--neutral-10);
+    font-family: var(--font-condensed);
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+}
+
+.faction-summary-text {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: justify;
+}
+
+.faction-status,
+.availability-state {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: start;
+    min-height: 18px;
+    padding: 2px 8px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 7px;
+    line-height: 1.35;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.faction-status--playable,
+.availability-state.is-open {
+    border-color: color-mix(in srgb, var(--security-safe) 50%, var(--border));
+    color: var(--security-safe);
+}
+
+.faction-status--coming-soon {
+    border-color: #66543a;
+    color: #c4a36d;
+}
+
+.faction-status--non-playable {
+    color: var(--neutral-250);
+}
+
+
+.availability-state.is-closed {
+    border-color: color-mix(in srgb, var(--red-bright) 55%, var(--border));
+    color: var(--red-bright);
+}
+
+
+.availability-state.is-unspecified {
+    min-height: 0;
+    padding: 0;
+    border-color: transparent;
+    color: var(--neutral-400);
+}
+
+.faction-toggle,
+.faction-unit-toggle {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    color: var(--neutral-300);
+}
+
+.faction-toggle::before,
+.faction-toggle::after,
+.faction-unit-toggle::before,
+.faction-unit-toggle::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 1px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease;
+}
+
+.faction-toggle::after,
+.faction-unit-toggle::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.faction-disclosure[open] > .faction-summary .faction-toggle,
+.faction-unit[open] > summary .faction-unit-toggle,
+.faction-rank-row details[open] .faction-unit-toggle {
+    color: var(--red-bright);
+}
+
+.faction-disclosure[open] > .faction-summary .faction-toggle::after,
+.faction-unit[open] > summary .faction-unit-toggle::after,
+.faction-rank-row details[open] .faction-unit-toggle::after {
+    transform: translate(-50%, -50%);
+}
+
+
+.faction-disclosure[open] > .faction-summary {
+    background-color: rgba(var(--white-rgb), 0.035);
+}
+
+
+.faction-disclosure > .faction-summary::before {
+    content: "";
+    position: absolute;
+    top: 17px;
+    bottom: 17px;
+    left: 0;
+    width: 2px;
+    background: var(--red-bright);
+    opacity: 0;
+    transform: scaleY(0.35);
+    transform-origin: center;
+    transition: opacity 0.24s ease, transform 0.24s ease;
+}
+
+
+.faction-disclosure[open] > .faction-summary::before {
+    opacity: 0.85;
+    transform: scaleY(1);
+}
+
+
+.faction-detail {
+    padding: 24px 0 32px 104px;
+    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.18);
+}
+
+.faction-detail::before {
+    position: absolute;
+    top: 28px;
+    bottom: 28px;
+    left: 24px;
+    width: 48px;
+    background-image: radial-gradient(circle, #303030 0.75px, transparent 0.75px);
+    background-size: 10px 10px;
+    content: "";
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.faction-detail-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.faction-detail .section-divider {
+    width: 100%;
+    margin: 24px 0;
+}
+
+.faction-info p {
+    margin: 0 0 12px;
+    padding-right: 14px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.75;
+    text-align: justify;
+}
+
+.faction-info p:last-child {
+    margin-bottom: 0;
+}
+
+.faction-info .faction-access-pending {
+    padding-top: 0;
+}
+
+.faction-info .faction-access-pending::before {
+    display: none;
+}
+
+.faction-info-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+    margin: 0;
+}
+
+.faction-info-list--stack {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+}
+
+.faction-info-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    align-items: start;
+}
+
+.faction-info-subtitle {
+    margin: 0 0 12px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.faction-info-column > p {
+    margin-bottom: 12px;
+}
+
+@media (max-width: 900px) {
+    .faction-info-columns {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.faction-info-list--grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+@media (max-width: 1100px) {
+    .faction-info-list--grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .faction-info-list--grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@property --tone {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #999999;
+}
+
+.faction-info-item.faction-info-item--icon {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    padding: 18px 16px;
+    border: 1px solid color-mix(in srgb, var(--tone) 20%, transparent);
+    background:
+        linear-gradient(180deg, color-mix(in srgb, var(--tone) 6%, transparent), transparent 60%),
+        rgba(var(--surface-raised-rgb), 0.6);
+}
+
+.faction-info-item.faction-info-item--icon {
+    transition: --tone 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.faction-info-item:hover {
+    --tone: var(--tone-bright);
+    border-color: color-mix(in srgb, var(--tone-bright) 60%, transparent);
+}
+
+.faction-info-item:not(.faction-info-item--icon):hover {
+    border-left-color: var(--tone-bright);
+}
+
+.faction-info-item.faction-info-item--icon:hover {
+    box-shadow: 0 0 14px color-mix(in srgb, var(--tone) 14%, transparent);
+    transform: translateY(-3px);
+}
+
+.faction-info-item--icon:hover .faction-info-icon {
+    opacity: 1;
+    transform: scale(1.08);
+}
+
+.faction-info-icon {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    grid-row: auto;
+    justify-self: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 14px;
+    background-color: var(--tone);
+    opacity: 0.9;
+    -webkit-mask: var(--info-icon) center / contain no-repeat;
+    mask: var(--info-icon) center / contain no-repeat;
+}
+
+.faction-info-item.faction-info-item--icon dt,
+.faction-info-item.faction-info-item--icon dd {
+    grid-column: 1;
+    grid-row: auto;
+}
+
+.faction-info-item.faction-info-item--icon dt {
+    font-size: 13px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.faction-info-item {
+    --tone: var(--neutral-150);
+    transition: --tone 0.3s ease, border-color 0.3s ease;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    column-gap: 12px;
+    align-content: start;
+    padding: 10px 12px;
+    border: 1px solid color-mix(in srgb, var(--tone) 20%, transparent);
+    border-left: 6px solid color-mix(in srgb, var(--tone) 35%, transparent);
+    background: rgba(var(--surface-raised-rgb), 0.6);
+}
+
+.faction-info-item--t0 { --tone-bright: var(--neutral-200); }
+.faction-info-item--t1 { --tone-bright: #6fb36a; }
+.faction-info-item--t2 { --tone-bright: #c9b458; }
+.faction-info-item--t3 { --tone-bright: #d98a3d; }
+.faction-info-item--t4 { --tone-bright: var(--status-level-critical); }
+.faction-info-item--t5 { --tone-bright: var(--status-level-max); }
+
+.faction-info-badge {
+    display: flex;
+    grid-row: 1 / span 2;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 100%;
+    color: var(--tone);
+    font-family: var(--font-mono);
+    font-size: 24px;
+    line-height: 1;
+}
+
+.faction-info-item dt {
+    grid-column: 2;
+    grid-row: 1;
+    margin-bottom: 4px;
+    color: var(--tone);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.faction-info-item dd {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 0;
+    text-align: justify;
+    hyphens: auto;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.faction-info-item:not(:has(.faction-info-badge, .faction-info-icon)) dt,
+.faction-info-item:not(:has(.faction-info-badge, .faction-info-icon)) dd {
+    grid-column: 1 / -1;
+    grid-row: auto;
+}
+
+.faction-section-label {
+    margin-bottom: 12px;
+    color: var(--neutral-300);
+    font-size: 8px;
+}
+
+.faction-briefing p {
+    margin: 0;
+    padding-right: 14px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.75;
+    text-align: justify;
+}
+
+.faction-access-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 22px;
+    margin: 0;
+}
+
+.faction-access-list > div {
+    min-width: 0;
+    padding-top: 8px;
+    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.16);
+}
+
+.faction-access-list dt {
+    margin-bottom: 5px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.faction-access-list dd {
+    margin: 0;
+    color: var(--neutral-100);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+
+.faction-access-pending {
+    margin: 0;
+    padding-top: 8px;
+    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.14);
+    color: var(--neutral-400);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+}
+
+.faction-structure {
+    padding-top: 0;
+}
+
+.faction-office-structure > .faction-unit-list::before {
+    display: none;
+}
+
+.faction-structure-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 12px;
+}
+
+.faction-structure-heading .faction-section-label:only-child {
+    margin-bottom: 0;
+}
+
+.faction-structure-heading .faction-section-label {
+    margin-bottom: 5px;
+}
+
+.faction-structure-heading h3 {
+    margin: 0;
+    color: var(--neutral-10);
+    font-family: var(--font-condensed);
+    font-size: 19px;
+    font-weight: 500;
+}
+
+.faction-structure-count {
+    color: var(--neutral-500);
+    font-family: var(--font-mono);
+    font-size: 18px;
+}
+
+.faction-structure:not(.faction-sheet-structure) .faction-structure-count {
+    font-size: 12px;
+}
+
+.faction-office-structure .faction-structure-count,
+.faction-sheet-structure .faction-structure-count {
+    margin-right: 16px;
+}
+
+.faction-structure-heading--departments .faction-structure-count {
+    margin-right: 20px;
+    transform: translateY(13px);
+}
+
+.faction-unit-list {
+    border-top: 1px solid var(--border);
+}
+
+.faction-unit {
+    border-bottom: 1px solid rgba(var(--neutral-mid-rgb), 0.15);
+}
+
+.faction-unit > summary {
+    display: grid;
+    grid-template-columns: 18px 28px minmax(0, 1fr) minmax(90px, auto) 16px;
+    align-items: center;
+    gap: 8px;
+    min-height: 51px;
+    padding-right: 16px;
+    cursor: pointer;
+}
+
+
+.faction-unit > summary .faction-unit-toggle {
+    grid-column: 5;
+}
+
+.faction-unit-index {
+    color: var(--neutral-400);
+    font-family: var(--font-mono);
+    font-size: 8px;
+}
+
+.faction-unit-mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+}
+
+.faction-unit-mark img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.28s ease;
+}
+
+.faction-unit-name {
+    min-width: 0;
+    color: var(--text-secondary);
+    font-family: var(--font-condensed);
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.faction-unit-details {
+    padding: 8px 0 16px 80px;
+}
+
+.faction-office-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.faction-office-column {
+    min-width: 0;
+}
+
+.faction-office-column > .faction-section-label {
+    margin-bottom: 8px;
+}
+
+.faction-unit-details .faction-access-list,
+.faction-sheet-unit-details .faction-access-list {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 820px;
+}
+.faction-sheet-units {
+    margin-top: 14px;
+    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.14);
+}
+.faction-sheet-unit {
+    border: 0;
+}
+.faction-sheet-unit + .faction-sheet-unit {
+    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.12);
+}
+.faction-office-units {
+    position: relative;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+.faction-office-units::before {
+    position: absolute;
+    top: 0;
+    right: 36px;
+    left: 0;
+    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.14);
+    content: "";
+}
+.faction-sheet-unit > summary {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr) 16px;
+    align-items: center;
+    gap: 10px;
+    min-height: 45px;
+    padding-right: 16px;
+    list-style: none;
+    cursor: pointer;
+}
+.faction-sheet-unit > summary::-webkit-details-marker {
+    display: none;
+}
+
+
+.faction-sheet-unit > summary .faction-unit-toggle {
+    grid-column: 3;
+}
+.faction-sheet-unit-mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+}
+.faction-sheet-unit-mark img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.28s ease;
+}
+.faction-sheet-unit-placeholder {
+    width: 5px;
+    height: 5px;
+    border: 1px solid var(--neutral-400);
+    transform: rotate(45deg);
+}
+.faction-sheet-unit-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+.faction-sheet-unit-type {
+    color: var(--neutral-400);
+    font-family: var(--font-mono);
+    font-size: 7px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.faction-sheet-unit-copy strong {
+    color: var(--text-secondary);
+    font-family: var(--font-condensed);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    transition: color 0.28s ease;
+}
+
+
+.faction-name,
+.faction-unit-name,
+.faction-rank-row details > summary {
+    transition: color 0.28s ease;
+}
+
+
+.faction-sheet-unit-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+}
+
+
+.faction-sheet-unit-title .availability-state {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    min-height: 16px;
+    padding: 0 6px;
+    font-size: 6px;
+    line-height: 1;
+}
+
+
+.availability-state.is-promotion {
+    border-color: #c4a36d;
+    color: #c4a36d;
+}
+.faction-sheet-unit[open] > summary .faction-unit-toggle {
+    color: var(--red-bright);
+}
+.faction-sheet-unit[open] > summary .faction-unit-toggle::after {
+    transform: translate(-50%, -50%);
+}
+.faction-sheet-unit-details {
+    padding: 8px 0 16px 36px;
+}
+.faction-sheet-unit-description,
+.faction-unit-description {
+    margin: 0 44px 10px 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.65;
+    text-align: justify;
+    white-space: pre-line;
+}
+.faction-sheet-requirements {
+    margin-top: 12px;
+    margin-right: 44px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.12);
+}
+
+
+.faction-sheet-capacity {
+    margin-top: 10px;
+    color: var(--neutral-400);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.08em;
+}
+
+.faction-sheet-requirements-label {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 7px;
+    letter-spacing: 0.12em;
+}
+
+.faction-sheet-requirements ul {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin: 9px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.faction-requirement-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.faction-requirement-box {
+    width: 11px;
+    height: 11px;
+    flex: 0 0 11px;
+    margin: 1px 0 0;
+    border: 1px solid var(--neutral-400);
+}
+.faction-sheet-structure > .faction-sheet-units {
+    margin-top: 0;
+}
+.faction-sheet-structure--insurgency,
+.faction-sheet-structure--insurgency > .faction-structure-heading,
+.faction-sheet-structure--insurgency > .faction-sheet-units,
+.faction-sheet-structure--insurgency .faction-sheet-unit {
+    width: 100%;
+}
+.faction-sheet-structure--insurgency > .faction-structure-heading {
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+.faction-sheet-structure--insurgency .faction-section-label {
+    margin-bottom: 0;
+}
+.faction-detail .insurgency-unit-divider {
+    margin: 24px 0 14px;
+}
+.faction-sheet-structure--insurgency > .faction-sheet-units {
+    border-top: 0;
+}
+.faction-sheet-structure--insurgency > .faction-sheet-units::before {
+    content: none;
+}
+
+.faction-department-list {
+    margin-bottom: 25px;
+}
+
+.faction-unit-list > .faction-unit:last-child::after {
+    content: none;
+}
+
+.faction-department-subunits {
+    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.14);
+}
+
+.faction-department-subunit {
+    padding: 9px 0;
+}
+
+.faction-department-subunit + .faction-department-subunit {
+    border-top: 1px solid rgba(var(--neutral-mid-rgb), 0.1);
+}
+
+.faction-department-subunit strong {
+    color: var(--neutral-100);
+    font-family: var(--font-condensed);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.faction-department-subunit p {
+    margin-top: 3px;
+    font-size: 11px;
+}
+
+.faction-rank-heading {
+    margin-top: 23px;
+}
+
+.faction-rank-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--border);
+}
+
+.faction-rank-row {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    min-height: 43px;
+    padding: 0 0 0 0;
+    border-bottom: 1px solid rgba(var(--neutral-mid-rgb), 0.15);
+}
+
+.faction-rank-list > .faction-rank-row:last-child::after {
+    content: none;
+}
+
+.faction-rank-row > .faction-unit-index {
+    padding-top: 15px;
+}
+
+.faction-rank-row details > summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(90px, auto) 16px;
+    align-items: center;
+    gap: 12px;
+    min-height: 43px;
+    color: var(--text-secondary);
+    font-family: var(--font-condensed);
+    font-size: 15px;
+    cursor: pointer;
+}
+
+
+.faction-rank-row details > summary .faction-unit-toggle {
+    grid-column: 3;
+}
+
+.faction-rank-row details[open] > summary {
+    color: var(--white);
+}
+
+.faction-rank-row .faction-access-list {
+    padding: 0 0 16px;
+}
+
+.insurgency-high-command {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    padding: 11px 0;
+}
+
+.insurgency-high-command > strong {
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 400;
+}
+
+.insurgency-command-cells,
+.insurgency-region-cells {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    gap: 5px;
+}
+
+.insurgency-cell-badge {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 1px solid var(--neutral-600);
+    background: var(--black2);
+    color: var(--neutral-300);
+    font-family: var(--font-mono);
+    font-size: 7px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.faction-regions-label {
+    margin: 0 0 8px;
+}
+
+.insurgency-us-map {
+    width: min(100%, 620px);
+    margin: 0 auto 18px;
+    padding: 8px 0;
+}
+
+.insurgency-us-map svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.insurgency-map-state {
+    fill: var(--neutral-750);
+    stroke: var(--neutral-500);
+    stroke-width: 1.2px;
+    stroke-opacity: 0.65;
+    vector-effect: non-scaling-stroke;
+    cursor: pointer;
+    transition: fill 0.18s ease, stroke 0.18s ease, filter 0.18s ease;
+}
+
+.insurgency-map-state.is-region-active {
+    fill: color-mix(in srgb, var(--red-bright) 38%, var(--black));
+    stroke: var(--red-bright);
+    stroke-opacity: 0.92;
+    filter: drop-shadow(0 0 2px rgba(var(--red-glow-rgb), 0.28));
+}
+
+.insurgency-map-labels {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    text-anchor: middle;
+    paint-order: stroke;
+    fill: var(--neutral-100);
+    stroke: #080b0c;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    transition: fill 0.18s ease;
+}
+
+.insurgency-map-label.is-region-active {
+    fill: var(--red-bright);
+}
+
+.insurgency-regions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: min(100%, 760px);
+    margin: 0 auto;
+}
+
+.insurgency-region {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    min-height: 61px;
+    padding: 11px 12px 0;
+}
+
+.insurgency-region + .insurgency-region {
+    padding-left: 12px;
+}
+
+.insurgency-region strong {
+    text-align: center;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 400;
+}
+
+.insurgency-cell-badge.is-playable {
+    border-color: color-mix(in srgb, var(--security-safe) 55%, var(--border));
+    color: var(--security-safe);
+}
+
+.insurgency-cell-badge.is-leadership {
+    border-color: var(--red-bright);
+    color: var(--red-bright);
+}
+
+.insurgency-region-cells {
+    display: grid;
+    grid-template-columns: repeat(3, 22px);
+    justify-content: center;
+}
+
+.insurgency-region > span:last-child,
+.faction-structure-note {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 7px;
+    line-height: 1.5;
+}
+
+.faction-structure-note {
+    margin: 12px 0 0;
+}
+
+.faction-structure--pending {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 16px 0 0;
+    border-top: 1px solid var(--border);
+}
+
+.faction-structure--pending .faction-section-label {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.faction-structure--pending p {
+    margin: 0;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    text-align: left;
+}
+
+.factions-hero,
+.faction-tools,
+.faction-group-heading,
+.faction-group-empty,
+.faction-detail-overview,
+.faction-unit,
+.faction-rank-row,
+.faction-empty {
+    position: relative;
+    border-bottom-color: transparent;
+    --inset-divider-color: var(--border);
+}
+
+.factions-hero::after,
+.faction-tools::after,
+.faction-group-heading::after,
+.faction-group-empty::after,
+.faction-empty::after {
+    right: 0;
+}
+
+.faction-unit,
+.faction-rank-row {
+    --inset-divider-color: rgba(var(--neutral-mid-rgb), 0.15);
+}
+
+.faction-detail,
+.faction-access-list > div,
+.faction-access-pending,
+.faction-unit-list,
+.faction-sheet-units,
+.faction-sheet-unit + .faction-sheet-unit,
+.faction-sheet-requirements,
+.faction-department-subunits,
+.faction-department-subunit + .faction-department-subunit,
+.faction-rank-list,
+.insurgency-regions,
+.faction-structure--pending {
+    position: relative;
+    border-top-color: transparent;
+    --inset-divider-color: var(--border);
+}
+
+.faction-detail {
+    --inset-divider-color: rgba(var(--neutral-mid-rgb), 0.18);
+}
+
+.faction-access-list > div {
+    --inset-divider-color: rgba(var(--neutral-mid-rgb), 0.16);
+}
+
+.faction-access-pending {
+    --inset-divider-color: rgba(var(--neutral-mid-rgb), 0.14);
+}
+
+.faction-sheet-units,
+.faction-department-subunits {
+    --inset-divider-color: rgba(var(--neutral-mid-rgb), 0.14);
+}
+
+.faction-sheet-unit + .faction-sheet-unit {
+    --inset-divider-color: rgba(var(--neutral-mid-rgb), 0.12);
+}
+
+.faction-rank-row {
+    --inset-divider-color: rgba(var(--neutral-mid-rgb), 0.15);
+}
+
+.faction-department-subunit + .faction-department-subunit {
+    --inset-divider-color: rgba(var(--neutral-mid-rgb), 0.1);
+}
+
+.faction-department-list::before,
+.faction-rank-row::after {
+    right: 20px;
+}
+
+.faction-access-list > div::before,
+.faction-access-pending::before,
+.faction-unit-list::before,
+.faction-sheet-units::before,
+.faction-sheet-unit + .faction-sheet-unit::before,
+.faction-department-subunits::before,
+.faction-department-subunit + .faction-department-subunit::before,
+.faction-rank-list::before,
+.faction-structure--pending::before,
+.factions-hero::after,
+.faction-tools::after,
+.faction-group-heading::after,
+.faction-group-empty::after,
+.faction-unit::after,
+.faction-rank-row::after,
+.insurgency-cells::before,
+.insurgency-cells::after,
+.faction-empty::after {
+    position: absolute;
+    right: 36px;
+    left: 0;
+    height: 1px;
+    background: var(--inset-divider-color, var(--border));
+    content: "";
+    pointer-events: none;
+}
+
+.faction-access-list > div::before,
+.faction-access-pending::before,
+.faction-unit-list::before,
+.faction-sheet-units::before,
+.faction-sheet-unit + .faction-sheet-unit::before,
+.faction-department-subunits::before,
+.faction-department-subunit + .faction-department-subunit::before,
+.faction-rank-list::before,
+.faction-structure--pending::before,
+.insurgency-cells::before {
+    top: 0;
+}
+
+.factions-hero::after,
+.faction-tools::after,
+.faction-group-heading::after,
+.faction-group-empty::after,
+.faction-detail-overview::after,
+.faction-unit::after,
+.faction-rank-row::after,
+.insurgency-cells::after,
+.faction-empty::after {
+    bottom: 0;
+}
+
+.factions-hero::after,
+.faction-tools::after,
+.faction-group-heading::after,
+.faction-group-empty::after,
+.faction-empty::after {
+    right: 0;
+}
+
+.faction-department-list::before {
+    right: 20px;
+}
+
+.faction-rank-row::after {
+    right: 28px;
+}
+
+.faction-unit::after,
+.faction-sheet-unit + .faction-sheet-unit::before {
+    right: 44px;
+}
+
+.faction-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    padding: 65px 16px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+}
+
+.faction-empty[hidden] {
+    display: none;
+}
+
+.faction-empty-mark {
+    color: var(--red-bright);
+    font-family: var(--font-mono);
+    font-size: 20px;
+}
+
+.faction-empty strong {
+    color: var(--neutral-150);
+    font-family: var(--font-condensed);
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.faction-empty > span:last-child {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 8px;
+}
+
+.factions-footer {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 24px 0 10px;
+    font-size: 7px;
+}
+
+.factions-footer-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.faction-disclosure > summary:hover .faction-name,
+.faction-unit > summary:hover .faction-unit-name,
+.faction-sheet-unit > summary:hover .faction-sheet-unit-copy strong,
+.faction-rank-row details > summary:hover {
+    color: var(--red-bright);
+}
+
+.faction-icon-base {
+    opacity: 1;
+}
+
+.faction-sheet-unit-mark .faction-icon-base {
+    filter: brightness(0) invert(1);
+}
+
+.faction-icon-tint {
+    position: absolute;
+    inset: 0;
+    background: var(--red-bright);
+    -webkit-mask: var(--faction-icon-mask) center / contain no-repeat;
+    mask: var(--faction-icon-mask) center / contain no-repeat;
+    opacity: 0;
+    transition: opacity 0.28s ease;
+}
+
+.faction-disclosure > summary:is(:hover, :focus-visible) .faction-icon-base,
+.faction-unit > summary:is(:hover, :focus-visible) .faction-icon-base,
+.faction-sheet-unit > summary:is(:hover, :focus-visible) .faction-icon-base {
+    opacity: 0;
+}
+
+.faction-disclosure > summary:is(:hover, :focus-visible) .faction-icon-tint,
+.faction-unit > summary:is(:hover, :focus-visible) .faction-icon-tint,
+.faction-sheet-unit > summary:is(:hover, :focus-visible) .faction-icon-tint {
+    opacity: 1;
+}
+
+.faction-disclosure > summary:focus-visible,
+.faction-unit > summary:focus-visible,
+.faction-rank-row details > summary:focus-visible {
+    outline: 1px solid var(--red-bright);
+    outline-offset: 4px;
+}
+
+@media (max-width: 850px) {
+    .factions-hero {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 24px;
+    }
+
+    .faction-counts {
+        min-height: 74px;
+    }
+
+    .faction-count {
+        justify-content: center;
+    }
+
+    .faction-summary {
+        grid-template-columns: 54px minmax(0, 1fr) 16px;
+        grid-template-columns: minmax(0, 1fr);
+
+        gap: 23px;
+    }
+}
+
+@media (max-width: 560px) {
+    .factions-page {
+        width: 92vw;
+        padding-top: 82px;
+    }
+
+    .factions-hero {
+        gap: 20px;
+        padding: 20px 0 22px;
+    }
+
+    .factions-hero h1 {
+        font-size: 44px;
+    }
+
+    .faction-count {
+        padding: 0 8px;
+    }
+
+    .faction-count strong {
+        font-size: 26px;
+    }
+
+    .faction-count span {
+        font-size: 6px;
+    }
+
+    .faction-filter-group {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .faction-filter {
+        justify-content: center;
+        min-width: 0;
+        padding: 0 5px;
+        font-size: 7px;
+    }
+
+    .faction-results-bar {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .faction-results-note {
+        text-align: left;
+    }
+
+
+    .faction-directory-group + .faction-directory-group {
+        margin-top: 22px;
+    }
+
+
+    .faction-group-heading {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 9px;
+        margin-bottom: 8px;
+        padding: 8px 0;
+    }
+
+
+    .faction-group-heading-copy {
+        gap: 8px;
+    }
+
+
+    .faction-group-heading h2 {
+        min-width: 0;
+        font-size: 14px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
+    .faction-group-heading p {
+        display: none;
+    }
+
+
+    .faction-group-count {
+        font-size: 19px;
+    }
+
+    .faction-summary {
+        grid-template-columns: 54px minmax(0, 1fr) 16px;
+        gap: 11px;
+        min-height: 90px;
+        padding: 14px 10px;
+    }
+
+    .faction-mark {
+        width: 52px;
+        height: 52px;
+    }
+
+    .faction-monogram {
+        font-size: 13px;
+    }
+
+    .faction-name {
+        font-size: 20px;
+    }
+
+    .faction-summary-text {
+        font-size: 11px;
+    }
+
+    .faction-summary-title .faction-status {
+        min-height: 16px;
+        padding: 0 6px;
+        font-size: 6px;
+    }
+
+    .faction-toggle {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+    }
+
+    .faction-summary-copy {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .faction-detail {
+        padding: 17px 10px 22px;
+    }
+
+    .faction-detail::before {
+        display: none;
+    }
+
+    .faction-detail-overview {
+        gap: 20px;
+    }
+
+    .faction-access-list {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .faction-briefing p {
+        text-align: justify;
+    }
+
+    .faction-unit > summary {
+        grid-template-columns: 18px 28px minmax(0, 1fr) 16px;
+        gap: 6px;
+        padding-right: 0;
+    }
+
+    .faction-unit > summary .availability-state {
+        grid-column: 3;
+        grid-row: 2;
+        justify-self: start;
+        min-height: 18px;
+        margin-bottom: 8px;
+    }
+
+    .faction-unit-toggle {
+        grid-column: 4;
+        grid-row: 1 / span 2;
+    }
+
+
+    .faction-sheet-unit > summary {
+        padding-right: 0;
+    }
+
+    .faction-unit-name {
+        align-self: end;
+        padding-top: 7px;
+    }
+
+    .faction-unit-details {
+        padding-left: 10px;
+    }
+
+    .faction-office-columns {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .faction-sheet-unit-details {
+        padding-left: 10px;
+    }
+
+    .faction-rank-row {
+        grid-template-columns: 24px minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .faction-rank-row details > summary {
+        grid-template-columns: minmax(0, 1fr) 16px;
+        gap: 7px;
+        padding: 6px 0;
+    }
+
+    .faction-rank-row details > summary .availability-state {
+        grid-column: 1;
+        justify-self: start;
+    }
+
+    .faction-rank-row details > summary .faction-unit-toggle {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+    }
+
+    .insurgency-cells {
+        grid-template-columns: repeat(7, minmax(25px, 1fr));
+    }
+
+    .insurgency-regions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .faction-detail::before,
+    .faction-access-list > div::before,
+    .faction-access-pending::before,
+    .faction-unit-list::before,
+    .faction-office-units::before,
+    .faction-sheet-units::before,
+    .faction-sheet-unit + .faction-sheet-unit::before,
+    .faction-department-subunits::before,
+    .faction-department-subunit + .faction-department-subunit::before,
+    .faction-rank-list::before,
+    .faction-structure--pending::before,
+    .faction-detail-overview::after,
+    .insurgency-cells::before,
+    .insurgency-cells::after {
+        right: 20px;
+    }
+
+    .faction-unit::after,
+    .faction-sheet-unit + .faction-sheet-unit::before,
+    .faction-rank-row::after {
+        right: 28px;
+    }
+
+    .faction-office-structure .faction-structure-count,
+    .faction-sheet-structure .faction-structure-count {
+        margin-right: 0;
+    }
+
+    .insurgency-region:nth-child(3) {
+        padding-left: 12px;
+    }
+
+    .faction-structure--pending {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .factions-footer {
+        flex-wrap: wrap;
+        font-size: 6px;
+    }
+
+    .factions-footer-line {
+        min-width: 30px;
+    }
+}
