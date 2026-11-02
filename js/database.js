@@ -23,6 +23,9 @@ const ITEMS_SHEET_URL =
 const INVENTORY_SHEET_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=849418287&single=true&output=csv";
 
+const DIVISIONS_SHEET_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=389952926&single=true&output=csv";
+
 const EXPENSE_ORDER = ["Incidental", "Standard", "Unusual", "Major", "Extreme"];
 
 let characters = [];
@@ -43,6 +46,101 @@ const fieldIcons = {
     }
 
 };
+
+
+const FACTION_LOGOS = {
+    foundation: "images/SCPF.png",
+    insurgency: "images/insurgency.svg",
+    goc: "images/goc.png",
+    pisces: "images/pisces.png",
+    "m-epic": "images/m-epic.png",
+    sarkic: "images/sarkic.webp",
+    serpent: "images/serpentshand.webp"
+};
+
+function getFactionLogo(faction) {
+    const key = String(faction ?? "").trim().toLowerCase();
+    const match = Object.keys(FACTION_LOGOS).find((id) => key.includes(id));
+    return match ? new URL(FACTION_LOGOS[match], document.baseURI).href : "";
+}
+
+const DEPARTMENT_LOGOS = {
+    administration: "images/ADM.png",
+    security: "images/SEC.png",
+    operations: "images/OPS.png",
+    research: "images/RES.png",
+    intelligence: "images/INT.png",
+    medicine: "images/MED.png",
+    medical: "images/MED.png",
+    logistics: "images/LOG.png",
+    ethics: "images/ETH.png"
+};
+
+const DIVISION_LOGOS = new Map();
+
+function normalizeDivisionName(name) {
+    return String(name ?? "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+}
+
+// Division logos come from the DIVISIONS sheet tab (logoURL column).
+async function loadDivisionLogos() {
+    try {
+        const response = await fetch(DIVISIONS_SHEET_URL);
+
+        if (!response.ok) {
+            throw new Error(`DIVISIONS sheet returned ${response.status}`);
+        }
+
+        parseCSV(await response.text()).forEach(raw => {
+            const row = Object.fromEntries(
+                Object.entries(raw).map(([key, value]) => [key.trim().toLowerCase(), value])
+            );
+            const logo = (row.logourl || "").trim();
+            const name = normalizeDivisionName(row.name);
+
+            if (name && logo) {
+                DIVISION_LOGOS.set(name, logo);
+            }
+        });
+    } catch (error) {
+        console.warn("Failed to load DIVISIONS:", error);
+    }
+}
+
+function getDivisionLogo(division) {
+    const key = normalizeDivisionName(division);
+
+    if (!key) {
+        return "";
+    }
+
+    if (DIVISION_LOGOS.has(key)) {
+        return DIVISION_LOGOS.get(key);
+    }
+
+    for (const [name, logo] of DIVISION_LOGOS) {
+        if (key.includes(name) || name.includes(key)) {
+            return logo;
+        }
+    }
+
+    return "";
+}
+
+function getKnobLogo(character) {
+    const divisionLogo = getDivisionLogo(character.division);
+    if (divisionLogo) {
+        return divisionLogo;
+    }
+    if (String(character.faction ?? "").toLowerCase().includes("foundation")) {
+        const key = `${character.department ?? ""} ${character.division ?? ""}`.toLowerCase();
+        const match = Object.keys(DEPARTMENT_LOGOS).find((id) => key.includes(id));
+        if (match) {
+            return new URL(DEPARTMENT_LOGOS[match], document.baseURI).href;
+        }
+    }
+    return getFactionLogo(character.faction);
+}
 
 
 /* =========================================================
@@ -468,6 +566,8 @@ async function loadCharacters() {
 
         inventoryRecords =
             await loadInventoryRecords();
+
+        await loadDivisionLogos();
 
         characters = [
             ...humanCharacters,
@@ -2331,13 +2431,14 @@ return `
 
             <div class="dg-core">
 
-                ${createDGResource("HP", character.current_hp, character.dg_hp)}
-                ${createDGResource("WP", character.current_wp, character.dg_wp)}
+                ${createDGResource("HP", character.current_hp,                 character.dg_hp, null, character)}
+                                ${createDGResource("WP", character.current_wp, character.dg_wp, null, character)}
                 ${createDGResource(
                     "SAN",
                     character.current_san,
                     character.dg_san,
-                    getSanBreakingPoint(character)
+                    getSanBreakingPoint(character),
+                    character
                 )}
 
             </div>
@@ -2389,7 +2490,9 @@ return `
 }
 
 
-function createDGResource(label, currentValue, maximumValue, breakpointValue = null) {
+function createDGResource(label, currentValue, maximumValue, breakpointValue = null, character = {}) {
+
+    const factionLogo = getKnobLogo(character);
 
     const currentText =
         String(currentValue ?? "").trim();
@@ -2456,7 +2559,7 @@ function createDGResource(label, currentValue, maximumValue, breakpointValue = n
                 aria-valuemax="100"
                 aria-valuenow="${Math.round(percentage)}"
                 aria-valuetext="${escapeHTML(valueText)}"
-                style="--resource-position: ${percentage}%; --breakpoint-position: ${breakpointPercentage}%;"
+                style="--resource-position: ${percentage}%; --breakpoint-position: ${breakpointPercentage}%;${factionLogo ? ` --knob-image: url('${factionLogo}');` : ""}"
             >
                 ${hasBreakpoint ? `<span class="dg-resource-breakpoint" title="Breaking Point ${escapeHTML(String(breakpointValue))}" aria-hidden="true"></span>` : ""}
                 <span class="dg-resource-indicator"></span>

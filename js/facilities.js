@@ -31,10 +31,25 @@ const WEATHER_API_URL =
     "https://api.open-meteo.com/v1/forecast";
 
 
+const FACTIONS_DATA_URL =
+    "json/factions.json";
+
+
+const INVENTORY_SHEET_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=849418287&single=true&output=csv";
+
+
+const ITEMS_SHEET_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2f5cMJbrxbmOgLn4meuKDPlmN4bTP8sN3oeQIEujQ32f9OSa9YRZqz6xVw4sk4qmoW5FZNKewVRx6/pub?gid=1957733727&single=true&output=csv";
+
+
 let facilities = [];
 let humans = [];
 let anomalies = [];
 let incidents = [];
+let inventoryRecords = [];
+let itemRecords = [];
+let factionRecords = [];
 
 let selectedFacility = null;
 let worldData = null;
@@ -901,6 +916,187 @@ async function loadIncidents() {
 
 
 /* =========================================================
+   FACTION LOGOS (LEGEND)
+   ========================================================= */
+
+/*
+ * Logos are optional: a failed request just
+ * leaves the legend with diamond markers.
+ */
+
+async function loadFactionRecords() {
+
+    try {
+
+        const response =
+            await fetch(
+                FACTIONS_DATA_URL
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Factions HTTP ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        factionRecords =
+            Array.isArray(data.factions)
+                ? data.factions
+                : [];
+
+    }
+    catch (error) {
+
+        console.warn(
+            "Could not load faction logos:",
+            error
+        );
+
+    }
+
+}
+
+
+/*
+ * Sheet faction names are matched loosely:
+ * "FOUNDATION" -> id, "GLOBAL OCCULT COALITION"
+ * -> a longer official name containing it.
+ */
+
+function getFactionLogo(
+    factionName
+) {
+
+    const key =
+        String(
+            factionName || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (!key) {
+        return "";
+    }
+
+
+    const match =
+        factionRecords.find(
+            faction =>
+                faction.logo &&
+                (
+                    String(faction.id || "").toLowerCase() === key ||
+                    String(faction.mark || "").toLowerCase() === key ||
+                    String(faction.name || "").toLowerCase().includes(key)
+                )
+        );
+
+
+    return match
+        ? match.logo
+        : "";
+
+}
+
+
+/* =========================================================
+   SITE INVENTORY DATA
+   ========================================================= */
+
+/*
+ * Site inventories live in the same INVENTORY
+ * tab as player inventories, keyed by site name
+ * (e.g. "Site-01"). Both tabs are optional, so a
+ * failure here never blocks the map.
+ */
+
+async function loadSheetRows(
+    url,
+    label
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                url
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `${label} HTTP ${response.status}`
+            );
+
+        }
+
+
+        return csvToObjects(
+            await response.text()
+        );
+
+    }
+    catch (error) {
+
+        console.warn(
+            `Could not load ${label}:`,
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+async function loadInventory() {
+
+    const [
+        inventoryRows,
+        itemRows
+    ] = await Promise.all([
+
+        loadSheetRows(
+            INVENTORY_SHEET_URL,
+            "INVENTORY"
+        ),
+
+        loadSheetRows(
+            ITEMS_SHEET_URL,
+            "ITEMS"
+        )
+
+    ]);
+
+
+    inventoryRecords =
+        inventoryRows.filter(
+            entry =>
+                entry.id &&
+                entry.name
+        );
+
+
+    itemRecords =
+        itemRows.filter(
+            item =>
+                item.name
+        );
+
+}
+
+
+/* =========================================================
    LOAD ALL DATABASES
    ========================================================= */
 
@@ -911,7 +1107,9 @@ async function loadAllData() {
         loadFacilities(),
         loadHumans(),
         loadAnomalies(),
-        loadIncidents()
+        loadIncidents(),
+        loadFactionRecords(),
+        loadInventory()
 
     ]);
 
@@ -1137,8 +1335,52 @@ function renderFactionFilters() {
     }
 
 
-    container.innerHTML =
-        "";
+    container.innerHTML = `
+
+        <div class="legend-header">
+
+            <span class="legend-title">
+                FACTION LEGEND
+            </span>
+
+            <button
+                class="legend-reset"
+                id="legend-reset"
+                type="button"
+                hidden
+            >
+                SHOW ALL
+            </button>
+
+        </div>
+
+    `;
+
+
+    container
+        .querySelector(
+            "#legend-reset"
+        )
+        .addEventListener(
+            "click",
+            () => {
+
+                container
+                    .querySelectorAll(
+                        ".faction-filter"
+                    )
+                    .forEach(
+                        filter =>
+                            filter.classList.add(
+                                "active"
+                            )
+                    );
+
+
+                updateFactionMarkers();
+
+            }
+        );
 
 
     const factions =
@@ -1158,8 +1400,33 @@ function renderFactionFilters() {
             (
                 a,
                 b
-            ) =>
-                a.localeCompare(b)
+            ) => {
+
+                /*
+                 * LOCALES is a catch-all, so it always
+                 * sits at the bottom of the legend.
+                 */
+
+                const aLast =
+                    a.toUpperCase() === "LOCALES";
+
+
+                const bLast =
+                    b.toUpperCase() === "LOCALES";
+
+
+                if (aLast !== bLast) {
+
+                    return aLast
+                        ? 1
+                        : -1;
+
+                }
+
+
+                return a.localeCompare(b);
+
+            }
         );
 
 
@@ -1184,16 +1451,48 @@ function renderFactionFilters() {
                 faction;
 
 
+            const logo =
+                getFactionLogo(
+                    faction
+                );
+
+
+            const siteCount =
+                facilities.filter(
+                    facility =>
+                        String(
+                            facility.faction || ""
+                        ).trim() === faction
+                ).length;
+
+
             button.innerHTML = `
 
                 <span
-                    class="faction-filter-diamond"
-                ></span>
+                    class="faction-filter-mark"
+                    aria-hidden="true"
+                >
+                    ${
+                        logo
+                            ? `<img
+                                class="faction-filter-logo"
+                                src="${escapeHTML(logo)}"
+                                alt=""
+                            >`
+                            : `<span class="faction-filter-diamond"></span>`
+                    }
+                </span>
 
                 <span
                     class="faction-filter-label"
                 >
                     ${escapeHTML(faction)}
+                </span>
+
+                <span
+                    class="faction-filter-count"
+                >
+                    ${String(siteCount).padStart(2, "0")}
                 </span>
 
             `;
@@ -1275,6 +1574,22 @@ function updateFactionMarkers() {
                     button.dataset.faction
             )
         );
+
+
+    const resetButton =
+        document.getElementById(
+            "legend-reset"
+        );
+
+
+    if (resetButton) {
+
+        resetButton.hidden =
+            document.querySelectorAll(
+                ".faction-filter:not(.active)"
+            ).length === 0;
+
+    }
 
 
     document
@@ -1517,6 +1832,11 @@ function openFacilityPanel(
 
 
     populateAnomalies(
+        facility
+    );
+
+
+    populateInventory(
         facility
     );
 
@@ -2029,6 +2349,45 @@ function locationsMatch(
    PERSONNEL
    ========================================================= */
 
+const DEPARTMENT_LOGOS = {
+    administration: "images/ADM.png",
+    security: "images/SEC.png",
+    operations: "images/OPS.png",
+    research: "images/RES.png",
+    intelligence: "images/INT.png",
+    medicine: "images/MED.png",
+    medical: "images/MED.png",
+    logistics: "images/LOG.png",
+    ethics: "images/ETH.png"
+};
+
+
+function getDepartmentLogo(
+    department
+) {
+
+    const key =
+        String(
+            department || ""
+        ).toLowerCase();
+
+
+    const match =
+        Object.keys(
+            DEPARTMENT_LOGOS
+        ).find(
+            name =>
+                key.includes(name)
+        );
+
+
+    return match
+        ? DEPARTMENT_LOGOS[match]
+        : "";
+
+}
+
+
 function populatePersonnel(
     facility
 ) {
@@ -2220,10 +2579,43 @@ function populatePersonnel(
                 "personnel-department";
 
 
+            const departmentLogo =
+                personnel.some(
+                    human =>
+                        String(
+                            human.faction || ""
+                        )
+                        .toLowerCase()
+                        .includes(
+                            "foundation"
+                        )
+                )
+                    ? getDepartmentLogo(
+                        department
+                    )
+                    : "";
+
+
             departmentElement.innerHTML = `
 
                 <div class="personnel-department-title">
-                    ${escapeHTML(department)}
+
+                    ${
+                        departmentLogo
+                            ? `
+                                <img
+                                    class="personnel-department-logo"
+                                    src="${escapeHTML(departmentLogo)}"
+                                    alt=""
+                                >
+                              `
+                            : ""
+                    }
+
+                    <span>
+                        ${escapeHTML(department)}
+                    </span>
+
                 </div>
 
             `;
@@ -2313,6 +2705,293 @@ function populatePersonnel(
    ANOMALIES
    ========================================================= */
 
+function getAnomalyDesignation(
+    anomaly
+) {
+
+    const catalog =
+        String(
+            anomaly.catalog || ""
+        ).trim();
+
+
+    const id =
+        String(
+            anomaly.id || ""
+        ).trim();
+
+
+    return (
+        catalog && id
+            ? `${catalog}-${id}`
+            : catalog || id || "UNIDENTIFIED"
+    );
+
+}
+
+
+function createContainmentCell(
+    number,
+    anomaly,
+    prefix = "CELL"
+) {
+
+    const cell =
+        document.createElement(
+            "div"
+        );
+
+
+    const cellNumber =
+        String(number)
+            .padStart(2, "0");
+
+
+    const cellLabel =
+        prefix === "CELL"
+            ? `CELL ${cellNumber}`
+            : `${prefix}-${cellNumber}`;
+
+
+    if (!anomaly) {
+
+        cell.className =
+            "containment-cell is-vacant";
+
+
+        cell.innerHTML = `
+
+            <div class="cell-head">
+                <span class="cell-number">
+                    ${escapeHTML(cellLabel)}
+                </span>
+            </div>
+
+            <div class="cell-vacant">
+                VACANT
+            </div>
+
+        `;
+
+        return cell;
+
+    }
+
+
+    const objectClass =
+        String(
+            anomaly.object_class || ""
+        ).trim();
+
+
+    const classKey =
+        objectClass
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-");
+
+
+    const containment =
+        parseFloat(
+            anomaly.containment
+        );
+
+
+    const containmentPercent =
+        Number.isFinite(containment)
+            ? Math.min(
+                100,
+                Math.max(
+                    0,
+                    containment
+                )
+            )
+            : null;
+
+
+    const details =
+        [
+            anomaly.type,
+            anomaly.clearance
+        ]
+        .map(
+            value =>
+                String(
+                    value || ""
+                ).trim()
+        )
+        .filter(
+            value =>
+                value &&
+                value.toUpperCase() !== "UNKNOWN"
+        );
+
+
+    cell.className =
+        `containment-cell is-occupied${
+            classKey
+                ? ` class-${classKey}`
+                : ""
+        }`;
+
+
+    cell.innerHTML = `
+
+        <div class="cell-head">
+
+            <span class="cell-number">
+                ${escapeHTML(cellLabel)}
+            </span>
+
+            ${
+                objectClass
+                    ? `
+                        <span class="cell-class">
+                            ${escapeHTML(objectClass)}
+                        </span>
+                      `
+                    : ""
+            }
+
+        </div>
+
+        <div class="cell-designation">
+            ${escapeHTML(
+                getAnomalyDesignation(anomaly)
+            )}
+        </div>
+
+        ${
+            anomaly.codename
+                ? `
+                    <div class="cell-codename">
+                        ${escapeHTML(anomaly.codename)}
+                    </div>
+                  `
+                : ""
+        }
+
+        ${
+            details.length
+                ? `
+                    <div class="cell-details">
+                        ${escapeHTML(details.join(" // "))}
+                    </div>
+                  `
+                : ""
+        }
+
+        ${
+            containmentPercent === null
+                ? ""
+                : `
+                    <div
+                        class="cell-containment"
+                        title="Containment ${containmentPercent}%"
+                    >
+                        <span class="cell-containment-label">
+                            CONTAINMENT
+                        </span>
+                        <span class="cell-containment-bar">
+                            <span style="width: ${containmentPercent}%"></span>
+                        </span>
+                        <span class="cell-containment-value">
+                            ${Math.round(containmentPercent)}%
+                        </span>
+                    </div>
+                  `
+        }
+
+    `;
+
+
+    return cell;
+
+}
+
+
+const TEMPORARY_AREA =
+    "Temporary Containment Area";
+
+
+/*
+ * Capacity is either a plain number (one unnamed
+ * wing) or "Wing Name: 4; Other Wing: 6".
+ */
+
+function parseWings(
+    capacityText
+) {
+
+    const text =
+        String(
+            capacityText ?? ""
+        ).trim();
+
+
+    if (/^\d+$/.test(text)) {
+
+        return Number(text) > 0
+            ? [{ name: "", capacity: Number(text) }]
+            : [];
+
+    }
+
+
+    return text
+        .split(";")
+        .map(
+            part => {
+
+                const colon =
+                    part.lastIndexOf(":");
+
+                return colon === -1
+                    ? null
+                    : {
+                        name: part.slice(0, colon).trim(),
+                        capacity: parseInt(
+                            part.slice(colon + 1),
+                            10
+                        )
+                    };
+
+            }
+        )
+        .filter(
+            wing =>
+                wing &&
+                wing.name &&
+                Number.isFinite(wing.capacity) &&
+                wing.capacity > 0
+        );
+
+}
+
+
+// "Light Containment Zone" -> "LCZ"
+function wingPrefix(
+    name
+) {
+
+    return name
+        .split(/\s+/)
+        .filter(Boolean)
+        .map(
+            word =>
+                word[0].toUpperCase()
+        )
+        .join("") || "CELL";
+
+}
+
+
+/*
+ * Each wing's capacity is its number of containment
+ * cells. Cells fill with the SCPs assigned to that
+ * wing; the rest are held in the Temporary
+ * Containment Area.
+ */
+
 function populateAnomalies(
     facility
 ) {
@@ -2326,6 +3005,12 @@ function populateAnomalies(
     const empty =
         document.getElementById(
             "anomalies-empty"
+        );
+
+
+    const occupancy =
+        document.getElementById(
+            "anomalies-occupancy"
         );
 
 
@@ -2349,17 +3034,137 @@ function populateAnomalies(
 
 
     const siteAnomalies =
-        anomalies.filter(
-            anomaly =>
-                locationsMatch(
-                    anomaly.location,
-                    facility
-                )
+        anomalies
+            .filter(
+                anomaly =>
+                    locationsMatch(
+                        anomaly.location,
+                        facility
+                    )
+            )
+            .sort(
+                (
+                    a,
+                    b
+                ) =>
+                    compareText(
+                        getAnomalyDesignation(a),
+                        getAnomalyDesignation(b)
+                    )
+            );
+
+
+    const wings =
+        parseWings(
+            facility.capacity
         );
 
 
+    const totalCapacity =
+        wings.reduce(
+            (
+                sum,
+                wing
+            ) =>
+                sum + wing.capacity,
+            0
+        );
+
+
+    const held =
+        siteAnomalies.length;
+
+
+    /*
+     * Assign each SCP to the wing named in its
+     * "wing" column. Anything without a matching
+     * wing, or whose wing is full, is held in the
+     * Temporary Containment Area. A plain-number
+     * capacity is a single unnamed wing.
+     */
+
+    const groups =
+        wings.map(
+            wing => ({
+                ...wing,
+                held: []
+            })
+        );
+
+
+    const temporary =
+        [];
+
+
+    siteAnomalies.forEach(
+        anomaly => {
+
+            const wanted =
+                String(
+                    anomaly.wing || ""
+                )
+                .trim()
+                .toLowerCase();
+
+
+            const group =
+                groups.length === 1 &&
+                !groups[0].name
+                    ? groups[0]
+                    : groups.find(
+                        candidate =>
+                            candidate.name.toLowerCase() === wanted
+                    );
+
+
+            if (
+                group &&
+                group.held.length < group.capacity
+            ) {
+
+                group.held.push(
+                    anomaly
+                );
+
+            }
+            else {
+
+                temporary.push(
+                    anomaly
+                );
+
+            }
+
+        }
+    );
+
+
+    const placed =
+        held - temporary.length;
+
+
+    if (occupancy) {
+
+        occupancy.textContent =
+            totalCapacity > 0
+                ? `${placed} / ${totalCapacity}`
+                : held > 0
+                    ? String(held)
+                    : "";
+
+
+        occupancy.classList.toggle(
+            "is-over",
+            totalCapacity > 0 &&
+            temporary.length > 0
+        );
+
+    }
+
+
     if (
-        siteAnomalies.length === 0
+        totalCapacity === 0 &&
+        held === 0
     ) {
 
         empty.classList.add(
@@ -2371,167 +3176,493 @@ function populateAnomalies(
     }
 
 
+    const summary =
+        document.createElement(
+            "div"
+        );
+
+
+    summary.className =
+        "cell-summary";
+
+
+    summary.innerHTML =
+        totalCapacity > 0
+            ? `
+                <span>CAPACITY <strong>${totalCapacity}</strong></span>
+                <span>OCCUPIED <strong>${placed}</strong></span>
+                <span>VACANT <strong>${totalCapacity - placed}</strong></span>
+                ${
+                    temporary.length
+                        ? `<span class="is-over">TEMPORARY <strong>${temporary.length}</strong></span>`
+                        : ""
+                }
+              `
+            : `
+                <span>HELD <strong>${held}</strong></span>
+                <span>CAPACITY <strong>NOT SET</strong></span>
+              `;
+
+
+    container.appendChild(
+        summary
+    );
+
+
     /*
-     * Sort by Object Class,
-     * then SCP designation.
+     * One block per wing: an optional header
+     * followed by that wing's grid of cells.
      */
 
-    siteAnomalies.sort(
-        (
-            a,
-            b
-        ) => {
+    const renderWing = (
+        title,
+        countText,
+        cells
+    ) => {
 
-            const classCompare =
-                compareText(
-                    a.object_class,
-                    b.object_class
-                );
-
-
-            if (
-                classCompare !== 0
-            ) {
-
-                return classCompare;
-
-            }
+        const section =
+            document.createElement(
+                "div"
+            );
 
 
-            return compareText(
-                a.id,
-                b.id
+        section.className =
+            "containment-wing";
+
+
+        if (title) {
+
+            section.innerHTML = `
+
+                <div class="wing-header">
+                    <span class="wing-title">
+                        ${escapeHTML(title.toUpperCase())}
+                    </span>
+                    <span class="wing-count">
+                        ${escapeHTML(countText)}
+                    </span>
+                </div>
+
+            `;
+
+        }
+
+
+        const grid =
+            document.createElement(
+                "div"
+            );
+
+
+        grid.className =
+            "containment-grid";
+
+
+        cells.forEach(
+            cell =>
+                grid.appendChild(
+                    cell
+                )
+        );
+
+
+        section.appendChild(
+            grid
+        );
+
+
+        container.appendChild(
+            section
+        );
+
+    };
+
+
+    if (totalCapacity === 0) {
+
+        renderWing(
+            "",
+            "",
+            siteAnomalies.map(
+                (
+                    anomaly,
+                    index
+                ) =>
+                    createContainmentCell(
+                        index + 1,
+                        anomaly
+                    )
+            )
+        );
+
+        return;
+
+    }
+
+
+    groups.forEach(
+        group => {
+
+            const prefix =
+                group.name
+                    ? wingPrefix(
+                        group.name
+                    )
+                    : "CELL";
+
+
+            renderWing(
+                group.name,
+                `${group.held.length} / ${group.capacity}`,
+                Array.from(
+                    { length: group.capacity },
+                    (
+                        _,
+                        index
+                    ) =>
+                        createContainmentCell(
+                            index + 1,
+                            group.held[index],
+                            prefix
+                        )
+                )
             );
 
         }
     );
 
 
-    /*
-     * Group by Object Class.
-     */
+    if (temporary.length) {
 
-    const objectClasses =
-        new Map();
+        renderWing(
+            TEMPORARY_AREA,
+            String(
+                temporary.length
+            ),
+            temporary.map(
+                (
+                    anomaly,
+                    index
+                ) =>
+                    createContainmentCell(
+                        index + 1,
+                        anomaly,
+                        "TCA"
+                    )
+            )
+        );
 
+    }
 
-    siteAnomalies.forEach(
-        anomaly => {
-
-            const objectClass =
-                anomaly.object_class ||
-                "UNCLASSIFIED";
-
-
-            if (
-                !objectClasses.has(
-                    objectClass
-                )
-            ) {
-
-                objectClasses.set(
-                    objectClass,
-                    []
-                );
-
-            }
+}
 
 
-            objectClasses
-                .get(objectClass)
-                .push(
-                    anomaly
-                );
+/* =========================================================
+   SITE INVENTORY
+   ========================================================= */
+
+function normalizeInventoryId(
+    value
+) {
+
+    return String(
+        value || ""
+    )
+    .trim()
+    .toUpperCase();
+
+}
+
+
+// Stats are stored as "Label: value; Label: value" in one sheet cell.
+function parseItemStats(
+    stats
+) {
+
+    return String(
+        stats || ""
+    )
+    .split(";")
+    .map(
+        part =>
+            part.trim()
+    )
+    .filter(
+        Boolean
+    )
+    .map(
+        part => {
+
+            const colon =
+                part.indexOf(":");
+
+            return colon === -1
+                ? null
+                : [
+                    part.slice(0, colon).trim(),
+                    part.slice(colon + 1).trim()
+                ];
 
         }
+    )
+    .filter(
+        Boolean
+    );
+
+}
+
+
+function populateInventory(
+    facility
+) {
+
+    const container =
+        document.getElementById(
+            "inventory-list"
+        );
+
+
+    const empty =
+        document.getElementById(
+            "inventory-empty"
+        );
+
+
+    const count =
+        document.getElementById(
+            "inventory-count"
+        );
+
+
+    if (
+        !container ||
+        !empty
+    ) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    empty.classList.remove(
+        "visible"
     );
 
 
-    objectClasses.forEach(
-        (
-            anomalyRecords,
-            objectClass
-        ) => {
+    const siteKey =
+        normalizeInventoryId(
+            facility.name
+        );
 
-            const classElement =
+
+    /*
+     * Duplicate rows for the same item are
+     * added together; a blank quantity is one.
+     * Thaumaturgy rows are not site stock.
+     */
+
+    const totals =
+        new Map();
+
+
+    inventoryRecords
+        .filter(
+            entry =>
+                normalizeInventoryId(
+                    entry.id
+                ) === siteKey &&
+                String(
+                    entry.type || ""
+                ).trim().toLowerCase() !== "thaumaturgy"
+        )
+        .forEach(
+            entry => {
+
+                const key =
+                    entry.name
+                        .trim()
+                        .toLowerCase();
+
+
+                const amount =
+                    parseInt(
+                        entry.quantity,
+                        10
+                    );
+
+
+                const quantity =
+                    Number.isNaN(amount)
+                        ? 1
+                        : amount;
+
+
+                const existing =
+                    totals.get(key);
+
+
+                if (existing) {
+
+                    existing.quantity += quantity;
+
+                }
+                else {
+
+                    totals.set(
+                        key,
+                        {
+                            name: entry.name,
+                            quantity
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+
+    const items =
+        [...totals.values()]
+        .map(
+            item => {
+
+                const record =
+                    itemRecords.find(
+                        candidate =>
+                            candidate.name
+                                .trim()
+                                .toLowerCase() ===
+                            item.name
+                                .trim()
+                                .toLowerCase()
+                    );
+
+                return {
+                    ...item,
+                    category:
+                        record?.category || "",
+                    stats:
+                        record
+                            ? parseItemStats(
+                                record.stats
+                            )
+                            : []
+                };
+
+            }
+        )
+        .sort(
+            (
+                a,
+                b
+            ) =>
+                compareText(
+                    a.category || "\uffff",
+                    b.category || "\uffff"
+                ) ||
+                compareText(
+                    a.name,
+                    b.name
+                )
+        );
+
+
+    if (count) {
+
+        count.textContent =
+            items.length
+                ? String(
+                    items.length
+                ).padStart(2, "0")
+                : "";
+
+    }
+
+
+    if (
+        items.length === 0
+    ) {
+
+        empty.classList.add(
+            "visible"
+        );
+
+        return;
+
+    }
+
+
+    items.forEach(
+        item => {
+
+            const entry =
                 document.createElement(
                     "div"
                 );
 
 
-            classElement.className =
-                "anomaly-object-class";
+            entry.className =
+                "site-inventory-item";
 
 
-            classElement.innerHTML = `
+            entry.innerHTML = `
 
-                <div class="anomaly-object-class-title">
-                    ${escapeHTML(objectClass)}
+                <div class="site-inventory-qty">
+                    <span class="site-inventory-qty-label">
+                        QTY
+                    </span>
+                    ${escapeHTML(item.quantity)}
+                </div>
+
+                <div class="site-inventory-body">
+
+                    ${
+                        item.category
+                            ? `
+                                <div class="site-inventory-category">
+                                    ${escapeHTML(item.category)}
+                                </div>
+                              `
+                            : ""
+                    }
+
+                    <div class="site-inventory-name">
+                        ${escapeHTML(item.name)}
+                    </div>
+
+                    ${
+                        item.stats.length
+                            ? `
+                                <dl class="site-inventory-specs">
+                                    ${
+                                        item.stats
+                                            .map(
+                                                ([label, value]) => `
+                                                    <div>
+                                                        <dt>${escapeHTML(label)}</dt>
+                                                        <dd>${escapeHTML(value)}</dd>
+                                                    </div>
+                                                `
+                                            )
+                                            .join("")
+                                    }
+                                </dl>
+                              `
+                            : ""
+                    }
+
                 </div>
 
             `;
 
 
-            anomalyRecords.forEach(
-                anomaly => {
-
-                    const entry =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    entry.className =
-                        "anomaly-entry";
-
-
-                    const designation =
-                        anomaly.id ||
-                        "UNIDENTIFIED";
-
-
-                    const codename =
-                        anomaly.codename ||
-                        "";
-
-
-                    entry.innerHTML = `
-
-                        <span
-                            class="anomaly-designation"
-                        >
-                            ${escapeHTML(
-                                designation
-                            )}
-                        </span>
-
-                        ${
-                            codename
-                                ? `
-                                    <span
-                                        class="anomaly-codename"
-                                    >
-                                        ${escapeHTML(
-                                            codename
-                                        )}
-                                    </span>
-                                  `
-                                : ""
-                        }
-
-                    `;
-
-
-                    classElement.appendChild(
-                        entry
-                    );
-
-                }
-            );
-
-
             container.appendChild(
-                classElement
+                entry
             );
 
         }
@@ -2637,14 +3768,14 @@ function populateIncidents(
 
 
             /*
-             * Blurb is the preferred
-             * one-line summary.
-             *
-             * Fall back to text if
-             * blurb is empty.
+             * The INCIDENTS tab is shared with the lore
+             * timeline: summary is the one-line description.
+             * Older column names remain as fallbacks.
              */
 
             const summary =
+                incident.summary ||
+                incident.title ||
                 incident.blurb ||
                 incident.text ||
                 "NO INCIDENT DESCRIPTION.";
