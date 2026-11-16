@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Sheet Maker | DIE IN THE DARK</title>
+
+    <link rel="icon" type="image/png" href="images/SCPF.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/sheet-maker.css">
+</head>
+<body>
+    <div data-include-navbar></div>
+
+    <main class="sheet-page">
+        <header class="sheet-header">
+            <div class="sheet-classification">
+                <span class="sheet-classification-line"></span>
+                TOOLS // PERSONNEL FILE GENERATOR
+            </div>
+
+            <h1>SHEET MAKER</h1>
+
+            <p>BUILD A DELTA GREEN AGENT. NOTHING IS SAVED. COPY THE TEXT AT THE BOTTOM WHEN YOU ARE DONE.</p>
+        </header>
+
+        <div id="sheet-error" class="sheet-notice is-error" role="alert" hidden></div>
+
+        <section class="sheet-section" aria-labelledby="sec-identity">
+            <h2 id="sec-identity"><span>01</span> Identity &amp; Role</h2>
+
+            <div class="sheet-fields">
+                <label class="sheet-field">
+                    <span>AGENT NAME</span>
+                    <input id="f-name" type="text" autocomplete="off" maxlength="80">
+                </label>
+                <label class="sheet-field narrow">
+                    <span>AGE</span>
+                    <input id="f-age" type="number" min="0" max="999" autocomplete="off">
+                </label>
+                <label class="sheet-field">
+                    <span>DEPARTMENT / FACTION</span>
+                    <select id="f-affiliation"><option value="">Loading...</option></select>
+                </label>
+            </div>
+
+            <p id="affiliation-note" class="sheet-hint"></p>
+
+            <div class="sheet-fields">
+                <label class="sheet-field wide">
+                    <span>BLURB</span>
+                    <textarea id="f-blurb" rows="2" maxlength="500" placeholder="A short summary of who this agent is."></textarea>
+                </label>
+            </div>
+        </section>
+
+        <section class="sheet-section" aria-labelledby="sec-stats">
+            <h2 id="sec-stats"><span>02</span> Statistics</h2>
+
+            <div class="sheet-toolbar">
+                <span id="stat-status" class="sheet-status" role="status"></span>
+            </div>
+            <p id="stat-hint" class="sheet-hint"></p>
+
+            <div class="sheet-stats" id="stat-grid"></div>
+
+            <div class="sheet-derived" id="derived"></div>
+        </section>
+
+        <section class="sheet-section" aria-labelledby="sec-skills">
+            <h2 id="sec-skills"><span>03</span> Skills</h2>
+
+            <div class="sheet-toolbar">
+                <span id="skill-status" class="sheet-status" role="status"></span>
+            </div>
+            <p class="sheet-hint">
+                Every skill starts at its Delta Green base value. Your department or faction raises its package skills.
+                Then spend <strong>8 bonus picks</strong>: each pick adds <strong>+20%</strong> to a skill, a skill can be picked more than once, and no skill can go above <strong>80%</strong>.
+                Specialty skills such as Art, Craft, Science, Foreign Language, Military Science, and Pilot can be added once per specialty.
+            </p>
+
+            <div class="sheet-skill-head" aria-hidden="true">
+                <span>SKILL</span><span>BASE</span><span>PACKAGE</span><span>BONUS</span><span>TOTAL</span>
+            </div>
+            <div id="skill-list" class="sheet-skills"></div>
+        </section>
+
+        <section class="sheet-section" aria-labelledby="sec-bonds">
+            <h2 id="sec-bonds"><span>04</span> Bonds</h2>
+            <p class="sheet-hint">
+                Each Bond starts equal to your <strong>Charisma</strong>. Name the people your agent cares about: family, partners, friends, colleagues.
+            </p>
+            <div id="bond-list" class="sheet-bonds"></div>
+        </section>
+
+        <section class="sheet-section" aria-labelledby="sec-output">
+            <h2 id="sec-output"><span>05</span> Bot Entry Text</h2>
+            <p class="sheet-hint">Copy this text and send it in. It updates as you edit the sheet.</p>
+            <textarea id="output" class="sheet-output" rows="20" readonly aria-label="Plain text character sheet"></textarea>
+            <div class="sheet-toolbar">
+                <button type="button" id="btn-copy" class="sheet-button primary">COPY TO CLIPBOARD</button>
+                <span id="copy-status" class="sheet-status" role="status"></span>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/navbar.js"></script>
+    <script src="js/sheet-maker.js"></script>
+</body>
+</html>

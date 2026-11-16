@@ -1,0 +1,146 @@
+
+{
+  "_comment": "Skill packages for the Sheet Maker. Keys are a faction id from factions.json, or 'factionId/Office Name' for Foundation departments. 'label' overrides the name shown in the selector. Skill values REPLACE the Delta Green base value when higher. Specialty skills use the form 'Science (Biology)'. 'bonds' is the number of Bonds the package starts with. Playable factions missing here fall back to 'default'. Values represent occupational training and expected competence, not exceptional individual ability.",
+  "default": {
+    "bonds": 3,
+    "skills": {}
+  },
+  "packages": {
+    "foundation/Administration": {
+      "label": "Administration",
+      "bonds": 3,
+      "skills": {
+        "Accounting": 50,
+        "Bureaucracy": 60,
+        "Computer Science": 40,
+        "HUMINT": 40,
+        "Law": 40,
+        "Persuade": 50,
+        "History": 30
+      }
+    },
+    "foundation/Security": {
+      "label": "Security",
+      "bonds": 3,
+      "skills": {
+        "Alertness": 50,
+        "Athletics": 40,
+        "Criminology": 30,
+        "Dodge": 40,
+        "Firearms": 50,
+        "First Aid": 30,
+        "Melee Weapons": 40,
+        "Search": 40,
+        "Unarmed Combat": 40
+      }
+    },
+    "foundation/Operations": {
+      "label": "Operations",
+      "bonds": 3,
+      "skills": {
+        "Alertness": 50,
+        "Athletics": 50,
+        "Demolitions": 30,
+        "Drive": 50,
+        "Firearms": 50,
+        "Navigate": 40,
+        "Search": 40,
+        "Stealth": 40,
+        "Survival": 40
+      }
+    },
+    "foundation/Research": {
+      "label": "Research",
+      "bonds": 3,
+      "skills": {
+        "Anthropology": 40,
+        "Archeology": 40,
+        "Computer Science": 40,
+        "Forensics": 40,
+        "History": 40,
+        "Occult": 30,
+        "Search": 40,
+        "Science (YOUR CHOICE)": 50
+      }
+    },
+    "foundation/Intelligence": {
+      "label": "Intelligence",
+      "bonds": 3,
+      "skills": {
+        "Alertness": 40,
+        "Bureaucracy": 40,
+        "Computer Science": 50,
+        "Criminology": 40,
+        "HUMINT": 60,
+        "Persuade": 40,
+        "SIGINT": 50
+      }
+    },
+    "foundation/Medicine": {
+      "label": "Medicine",
+      "bonds": 3,
+      "skills": {
+        "First Aid": 50,
+        "Forensics": 40,
+        "Medicine": 60,
+        "Pharmacy": 50,
+        "Psychotherapy": 40,
+        "Science (YOUR CHOICE)": 40,
+        "Surgery": 40
+      }
+    },
+    "foundation/Logistics": {
+      "label": "Logistics",
+      "bonds": 3,
+      "skills": {
+        "Accounting": 40,
+        "Bureaucracy": 50,
+        "Drive": 50,
+        "Heavy Machinery": 50,
+        "Navigate": 40,
+        "Persuade": 40,
+        "Craft (YOUR CHOICE)": 50
+      }
+    },
+    "foundation/Ethics Committee": {
+      "label": "Ethics Committee",
+      "bonds": 3,
+      "skills": {
+        "Bureaucracy": 50,
+        "History": 30,
+        "HUMINT": 50,
+        "Law": 60,
+        "Persuade": 50,
+        "Psychotherapy": 40
+      }
+    },
+    "pisces": {
+      "label": "PISCES",
+      "bonds": 3,
+      "skills": {
+        "Alertness": 50,
+        "Bureaucracy": 40,
+        "Criminology": 50,
+        "Firearms": 40,
+        "HUMINT": 60,
+        "Occult": 50,
+        "Persuade": 40,
+        "Search": 50
+      }
+    },
+    "insurgency": {
+      "label": "Chaos Insurgency",
+      "bonds": 3,
+      "skills": {
+        "Alertness": 50,
+        "Athletics": 50,
+        "Demolitions": 30,
+        "Dodge": 40,
+        "Firearms": 40,
+        "Stealth": 50,
+        "Survival": 50,
+        "Unarmed Combat": 40
+      }
+    }
+  }
+}

@@ -19,6 +19,12 @@
       "factionIds": ["sarkics", "serpents-hand"]
     },
     {
+      "id": "the-anomalous",
+      "name": "THE ANOMALOUS",
+      "description": "Non-playable anomalous entities and species with their own agendas.",
+      "factionIds": ["extraterrestrials"]
+    },
+    {
       "id": "defunct-organizations",
       "name": "DEFUNCT ORGANIZATIONS",
       "description": "Historical organizations that no longer exist.",
@@ -335,6 +341,21 @@
       "playability": "non-playable",
       "classification": "CULT OF THE UNNATURAL",
       "summary": "Carnomancers, followers of the Grand Karcist Ion in service of the demiurge Yaldabaoth.",
+      "lore": "Placeholder",
+      "availability": "not-applicable",
+      "discordRole": "",
+      "joinRequirements": "",
+      "promotionRequirements": ""
+    },
+    {
+      "id": "extraterrestrials",
+      "directoryGroup": "the-anomalous",
+      "name": "EXTRATERRESTRIALS",
+      "mark": "ET",
+      "logo": "",
+      "playability": "non-playable",
+      "classification": "ANOMALOUS ENTITIES",
+      "summary": "Visitors and inhabitants from beyond Earth.",
       "lore": "Placeholder",
       "availability": "not-applicable",
       "discordRole": "",
